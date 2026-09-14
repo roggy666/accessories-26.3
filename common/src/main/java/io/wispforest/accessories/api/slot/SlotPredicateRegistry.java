@@ -6,7 +6,7 @@ import io.wispforest.accessories.api.slot.validator.EntitySlotValidator;
 import io.wispforest.accessories.api.slot.validator.SlotValidator;
 import io.wispforest.accessories.api.slot.validator.SlotValidatorRegistry;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -17,15 +17,15 @@ import java.util.*;
 @Deprecated(forRemoval = true)
 public class SlotPredicateRegistry {
 
-    public static void register(ResourceLocation location, SlotBasedPredicate predicate) {
+    public static void register(Identifier location, SlotBasedPredicate predicate) {
         SlotValidatorRegistry.register(location, predicate);
     }
 
     /**
-     * @return {@link SlotBasedPredicate} bound to the given {@link ResourceLocation} or an Empty {@link Optional} if absent
+     * @return {@link SlotBasedPredicate} bound to the given {@link Identifier} or an Empty {@link Optional} if absent
      */
     @Nullable
-    public static SlotBasedPredicate getPredicate(ResourceLocation location) {
+    public static SlotBasedPredicate getPredicate(Identifier location) {
         var validator = SlotValidatorRegistry.getPredicate(location);
 
         if (validator == null) return null;
@@ -100,11 +100,11 @@ public class SlotPredicateRegistry {
        return SlotValidatorRegistry.getStackSlotTypes(level, entity, stack);
     }
 
-    public static boolean getPredicateResults(Set<ResourceLocation> predicateIds, Level level, SlotType slotType, int index, ItemStack stack){
+    public static boolean getPredicateResults(Set<Identifier> predicateIds, Level level, SlotType slotType, int index, ItemStack stack){
         return getPredicateResults(predicateIds, level, null, slotType, index, stack);
     }
 
-    public static boolean getPredicateResults(Set<ResourceLocation> predicateIds, Level level, @Nullable LivingEntity entity, SlotType slotType, int index, ItemStack stack){
+    public static boolean getPredicateResults(Set<Identifier> predicateIds, Level level, @Nullable LivingEntity entity, SlotType slotType, int index, ItemStack stack){
         return SlotValidatorRegistry.getPredicateResults(predicateIds, level, entity, slotType, index, stack);
     }
 }

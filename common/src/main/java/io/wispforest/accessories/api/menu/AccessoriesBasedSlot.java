@@ -18,7 +18,7 @@ import io.wispforest.accessories.menu.SlotTypeAccessible;
 import io.wispforest.accessories.pond.AccessoriesLivingEntityExtension;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -160,7 +160,7 @@ public class AccessoriesBasedSlot extends Slot implements SlotTypeAccessible, To
     }
 
     @Override
-    public ResourceLocation getNoItemIcon(){
+    public Identifier getNoItemIcon(){
         var slotType = this.accessoriesContainer.slotType();
 
         return slotType != null ? slotType.icon() : SlotType.EMPTY_SLOT_ICON;

@@ -15,7 +15,7 @@ import io.wispforest.accessories.data.EntitySlotLoader;
 import io.wispforest.accessories.data.SlotTypeLoader;
 import io.wispforest.accessories.impl.AccessoryAttributeLogic;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -30,9 +30,9 @@ public class SlotValidatorRegistry {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private static final Map<ResourceLocation, SlotValidator> PREDICATES = new HashMap<>();
+    private static final Map<Identifier, SlotValidator> PREDICATES = new HashMap<>();
 
-    public static void register(ResourceLocation location, SlotValidator predicate) {
+    public static void register(Identifier location, SlotValidator predicate) {
         if(PREDICATES.containsKey(location)) {
             LOGGER.warn("[AccessoriesAPI]: A SlotValidator attempted to be registered but a duplicate entry existed already! [Id: {}]", location);
 
@@ -43,10 +43,10 @@ public class SlotValidatorRegistry {
     }
 
     /**
-     * @return {@link SlotValidator} bound to the given {@link ResourceLocation} or an Empty {@link Optional} if absent
+     * @return {@link SlotValidator} bound to the given {@link Identifier} or an Empty {@link Optional} if absent
      */
     @Nullable
-    public static SlotValidator getPredicate(ResourceLocation location) {
+    public static SlotValidator getPredicate(Identifier location) {
         return PREDICATES.get(location);
     }
 
@@ -149,17 +149,17 @@ public class SlotValidatorRegistry {
         return validSlots;
     }
 
-    public static boolean getPredicateResults(Set<ResourceLocation> predicateIds, Level level, SlotType slotType, int index, ItemStack stack){
+    public static boolean getPredicateResults(Set<Identifier> predicateIds, Level level, SlotType slotType, int index, ItemStack stack){
         return getPredicateResults(predicateIds, level, null, slotType, index, stack);
     }
 
-    public static boolean getPredicateResults(Set<ResourceLocation> predicateIds, Level level, @Nullable LivingEntity entity, SlotType slotType, int index, ItemStack stack){
+    public static boolean getPredicateResults(Set<Identifier> predicateIds, Level level, @Nullable LivingEntity entity, SlotType slotType, int index, ItemStack stack){
         return getPredicateResponse(predicateIds, level, entity, slotType, index, stack, new ActionResponseBuffer(true))
             .canPerformAction()
             .isValid(false);
     }
 
-    public static ActionResponseBuffer getPredicateResponse(Set<ResourceLocation> predicateIds, Level level, @Nullable LivingEntity entity, SlotType slotType, int index, ItemStack stack, ActionResponseBuffer buffer){
+    public static ActionResponseBuffer getPredicateResponse(Set<Identifier> predicateIds, Level level, @Nullable LivingEntity entity, SlotType slotType, int index, ItemStack stack, ActionResponseBuffer buffer){
         for (var predicateId : predicateIds) {
             var predicate = getPredicate(predicateId);
 
@@ -178,7 +178,7 @@ public class SlotValidatorRegistry {
     }
 
     private static TagKey<Item> getSlotTag(SlotType slotType) {
-        var location = UniqueSlotHandling.isUniqueSlot(slotType.name()) ? ResourceLocation.parse(slotType.name()) : Accessories.of(slotType.name());
+        var location = UniqueSlotHandling.isUniqueSlot(slotType.name()) ? Identifier.parse(slotType.name()) : Accessories.of(slotType.name());
 
         return TagKey.create(Registries.ITEM, location);
     }
@@ -191,7 +191,7 @@ public class SlotValidatorRegistry {
             buffer.respondWith(SlotValidatorReasons.ALWAYS_INVALID);
         });
         register(AccessoriesBaseData.TAG_PREDICATE_ID, (level, slotType, i, stack, buffer) -> {
-            buffer.respondWith(new TagValidationResponse<>(stack.getItemHolder(), List.of(getSlotTag(slotType), AccessoriesTags.ANY_TAG), TagValidationResponse.ANY_MATCH));
+            buffer.respondWith(new TagValidationResponse<>(stack.typeHolder(), List.of(getSlotTag(slotType), AccessoriesTags.ANY_TAG), TagValidationResponse.ANY_MATCH));
         });
         register(AccessoriesBaseData.ATTRIBUTE_PREDICATE_ID, SlotValidator.withEntity((entity, level, slotType, index, stack, buffer) -> {
             var bl = !AccessoryAttributeLogic.getAttributeModifiers(stack, entity, slotType.name(), index)

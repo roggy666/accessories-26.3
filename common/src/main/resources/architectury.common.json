@@ -1,16 +1,13 @@
 {
   "accessWidener": "accessories.accesswidener",
   "injected_interfaces": {
-    "net/minecraft/class_1309": [
+    "net/minecraft/world/entity/LivingEntity": [
       "io/wispforest/accessories/pond/AccessoriesAPIAccess"
     ],
-    "net/minecraft/class_4264": [
-      "io/wispforest/accessories/client/gui/AbstractButtonExtension"
-    ],
-    "net/minecraft/class_10042": [
+    "net/minecraft/client/renderer/entity/state/LivingEntityRenderState": [
       "io/wispforest/accessories/pond/AccessoriesRenderStateAPI"
     ],
-    "net/minecraft/class_1836": [
+    "net/minecraft/world/item/TooltipFlag": [
       "io/wispforest/accessories/pond/TooltipFlagExtended"
     ]
   }

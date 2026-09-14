@@ -52,7 +52,7 @@ public record SyncOptionChange(PlayerOption<?> option, Object data) {
 
     //@Environment(EnvType.CLIENT)
     public static void handleClient(SyncOptionChange packet, Player player) {
-        if(Minecraft.getInstance().screen instanceof AccessoriesScreenBase accessoriesScreen) {
+        if(Minecraft.getInstance().gui.screen() instanceof AccessoriesScreenBase accessoriesScreen) {
             accessoriesScreen.onHolderChange(packet.option());
         }
     }

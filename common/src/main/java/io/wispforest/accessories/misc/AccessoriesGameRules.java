@@ -1,27 +1,35 @@
 package io.wispforest.accessories.misc;
 
-import io.wispforest.accessories.mixin.GameRulesAccessor;
-import net.minecraft.world.level.GameRules;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.serialization.Codec;
+import io.wispforest.accessories.Accessories;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.level.gamerules.GameRule;
+import net.minecraft.world.level.gamerules.GameRuleCategory;
+import net.minecraft.world.level.gamerules.GameRuleType;
+import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.util.function.Consumer;
-
-import static net.minecraft.world.level.GameRules.*;
 
 @ApiStatus.Internal
 public class AccessoriesGameRules {
 
-    public static final GameRules.Key<GameRules.BooleanValue> RULE_KEEP_ACCESSORY_INVENTORY = register("keepAccessoryInventory", Category.PLAYER, createBooleanRuleType(false));
+    public static final GameRule<Boolean> RULE_KEEP_ACCESSORY_INVENTORY = registerBoolean("keep_accessory_inventory", GameRuleCategory.PLAYER, false);
 
-    public static <T extends Value<T>> Key<T> register(String name, Category category, Type<T> type) {
-        return GameRulesAccessor.accessories$register("accessories." + name, category, type);
-    }
+    // Game rules are a proper registry now, so this mirrors the private GameRules#registerBoolean under our namespace
+    public static GameRule<Boolean> registerBoolean(String name, GameRuleCategory category, boolean defaultValue) {
+        var rule = new GameRule<>(
+                category,
+                GameRuleType.BOOL,
+                BoolArgumentType.bool(),
+                GameRuleTypeVisitor::visitBoolean,
+                Codec.BOOL,
+                value -> value ? 1 : 0,
+                defaultValue,
+                FeatureFlags.VANILLA_SET
+        );
 
-    public static GameRules.Type<GameRules.BooleanValue> createBooleanRuleType(boolean defaultValue) {
-        return createBooleanRuleType(defaultValue, (booleanValue) -> {});
-    }
-
-    public static GameRules.Type<GameRules.BooleanValue> createBooleanRuleType(boolean defaultValue, Consumer<GameRules.BooleanValue> consumer) {
-        return GameRulesAccessor.BooleanValueAccessor.accessories$create(defaultValue, (server, booleanValue) -> consumer.accept(booleanValue));
+        return Registry.register(BuiltInRegistries.GAME_RULE, Accessories.of(name), rule);
     }
 }

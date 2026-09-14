@@ -12,7 +12,7 @@ import io.wispforest.accessories.api.slot.SlotType;
 import io.wispforest.accessories.api.slot.validator.SlotValidatorRegistry;
 import io.wispforest.accessories.impl.AccessoryAttributeLogic;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -134,7 +134,7 @@ public class AccessoriesAPI {
     }
 
     @Deprecated(forRemoval = true)
-    public static void addAttribute(ItemStack stack, String slotName, Holder<Attribute> attribute, ResourceLocation location, double amount, AttributeModifier.Operation operation, boolean isStackable) {
+    public static void addAttribute(ItemStack stack, String slotName, Holder<Attribute> attribute, Identifier location, double amount, AttributeModifier.Operation operation, boolean isStackable) {
         AccessoryAttributeUtils.addAttribute(stack, slotName, attribute, location, amount, operation, isStackable);
     }
 
@@ -144,7 +144,7 @@ public class AccessoriesAPI {
      * @return {@link UUID} based on the provided {@link SlotType#name} and entry index
      */
     @Deprecated(forRemoval = true)
-    public static ResourceLocation createSlotLocation(SlotType slotType, int index) {
+    public static Identifier createSlotLocation(SlotType slotType, int index) {
         return createSlotLocation(slotType.name(), index);
     }
 
@@ -152,7 +152,7 @@ public class AccessoriesAPI {
      * @return {@link UUID} based on the provided slot name and entry index
      */
     @Deprecated(forRemoval = true)
-    public static ResourceLocation createSlotLocation(String slotName, int index) {
+    public static Identifier createSlotLocation(String slotName, int index) {
         return Accessories.of(slotName.replace(":", "_") + "/" + index);
     }
 
@@ -234,22 +234,22 @@ public class AccessoriesAPI {
 
     @Deprecated(forRemoval = true)
     @Nullable
-    public static SlotBasedPredicate getPredicate(ResourceLocation location) {
+    public static SlotBasedPredicate getPredicate(Identifier location) {
         return SlotPredicateRegistry.getPredicate(location);
     }
 
     @Deprecated(forRemoval = true)
-    public static void registerPredicate(ResourceLocation location, SlotBasedPredicate predicate) {
+    public static void registerPredicate(Identifier location, SlotBasedPredicate predicate) {
         SlotPredicateRegistry.register(location, predicate);
     }
 
     @Deprecated(forRemoval = true)
-    public static boolean getPredicateResults(Set<ResourceLocation> predicateIds, Level level, SlotType slotType, int index, ItemStack stack){
+    public static boolean getPredicateResults(Set<Identifier> predicateIds, Level level, SlotType slotType, int index, ItemStack stack){
         return SlotValidatorRegistry.getPredicateResults(predicateIds, level, null, slotType, index, stack);
     }
 
     @Deprecated(forRemoval = true)
-    public static boolean getPredicateResults(Set<ResourceLocation> predicateIds, Level level, @Nullable LivingEntity entity, SlotType slotType, int index, ItemStack stack){
+    public static boolean getPredicateResults(Set<Identifier> predicateIds, Level level, @Nullable LivingEntity entity, SlotType slotType, int index, ItemStack stack){
         return SlotValidatorRegistry.getPredicateResults(predicateIds, level, entity, slotType, index, stack);
     }
 }

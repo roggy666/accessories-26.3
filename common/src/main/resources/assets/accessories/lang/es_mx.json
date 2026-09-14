@@ -35,7 +35,7 @@
   "key.category.accessories.main": "Accesories",
   "argument.livingEntities.nonLiving": "Solo las entidades vivas pueden ser afectadas por este comando, pero el selector proporcionado incluye entidades no vivas",
 
-  "gamerule.accessories.keepAccessoryInventory": "Mantener Inventario de Accesories",
+  "gamerule.accessories.keep_accessory_inventory": "Mantener Inventario de Accesories",
 
   "#comment": "Relacionado con la IGU a continuación",
 

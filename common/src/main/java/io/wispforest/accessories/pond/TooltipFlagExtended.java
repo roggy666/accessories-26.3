@@ -1,7 +1,7 @@
 package io.wispforest.accessories.pond;
 
 import io.wispforest.accessories.AccessoriesClientInternals;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.TooltipFlag;
 
 public interface TooltipFlagExtended {

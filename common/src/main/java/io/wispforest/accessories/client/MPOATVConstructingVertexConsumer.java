@@ -25,6 +25,11 @@ public final class MPOATVConstructingVertexConsumer implements VertexConsumer {
     }
 
     @Override
+    public VertexConsumer setLineWidth(float width) {
+        return this;
+    }
+
+    @Override
     public VertexConsumer addVertex(float x, float y, float z) {
         var leeway = 10;
 
@@ -47,6 +52,7 @@ public final class MPOATVConstructingVertexConsumer implements VertexConsumer {
     }
 
     @Override public VertexConsumer setColor(int i, int j, int k, int l) { return this; }
+    @Override public VertexConsumer setColor(int argb) { return this; }
     @Override public VertexConsumer setUv(float f, float g) { return this; }
     @Override public VertexConsumer setUv1(int i, int j) { return this; }
     @Override public VertexConsumer setUv2(int i, int j) { return this; }

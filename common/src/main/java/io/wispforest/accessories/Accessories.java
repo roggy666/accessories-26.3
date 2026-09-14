@@ -24,7 +24,7 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.LivingEntity;
@@ -44,10 +44,10 @@ public class Accessories {
 
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final ResourceLocation SLOT_LOADER_LOCATION = Accessories.of("slot_loader");
-    public static final ResourceLocation ENTITY_SLOT_LOADER_LOCATION = Accessories.of("entity_slot_loader");
-    public static final ResourceLocation SLOT_GROUP_LOADER_LOCATION = Accessories.of("slot_group_loader");
-    public static final ResourceLocation DATA_RELOAD_HOOK = Accessories.of("data_reload_hook");
+    public static final Identifier SLOT_LOADER_LOCATION = Accessories.of("slot_loader");
+    public static final Identifier ENTITY_SLOT_LOADER_LOCATION = Accessories.of("entity_slot_loader");
+    public static final Identifier SLOT_GROUP_LOADER_LOCATION = Accessories.of("slot_group_loader");
+    public static final Identifier DATA_RELOAD_HOOK = Accessories.of("data_reload_hook");
 
     public static final boolean DEBUG;
 
@@ -64,12 +64,12 @@ public class Accessories {
 
     public static final String MODID = "accessories";
 
-    public static ResourceLocation of(String path){
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    public static Identifier of(String path){
+        return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
-    public static ResourceLocation parseLocationOrDefault(String s){
-        var location = ResourceLocation.tryParse(s);
+    public static Identifier parseLocationOrDefault(String s){
+        var location = Identifier.tryParse(s);
 
         if (location == null) location = Accessories.of(s);
 
@@ -129,7 +129,7 @@ public class Accessories {
 
             AllowEntityModificationCallback.EVENT.invoker().allowModifications(targetEntity, player, null, buffer);
 
-            if(!buffer.canPerformAction().isValid(false) && !player.hasPermissions(Commands.LEVEL_ADMINS)) return;
+            if(!buffer.canPerformAction().isValid(false) && !Commands.LEVEL_ADMINS.check(player.permissions())) return;
         }
 
         AccessoriesInternals.INSTANCE.openAccessoriesMenu(player, variant, targetEntity, carriedStack);
@@ -148,14 +148,14 @@ public class Accessories {
         AllowEntityModificationCallback.EVENT.register((target, player, reference, buffer) -> {
             var type = target.getType();
 
-            if(type.is(AccessoriesTags.MODIFIABLE_ENTITY_BLACKLIST)) {
+            if(type.builtInRegistryHolder().is(AccessoriesTags.MODIFIABLE_ENTITY_BLACKLIST)) {
                 buffer.respondWith(ActionResponse.of(false, Component.literal("Given entity can not be manged by you!")));
                 return;
             }
 
             var isOwnersPet = (target instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() != null && ownableEntity.getOwner().equals(player));
 
-            if(isOwnersPet || type.is(AccessoriesTags.MODIFIABLE_ENTITY_WHITELIST)) {
+            if(isOwnersPet || type.builtInRegistryHolder().is(AccessoriesTags.MODIFIABLE_ENTITY_WHITELIST)) {
                 buffer.respondWith(ActionResponse.of(true,
                     isOwnersPet
                         ? Component.literal("Your pet can be managed by you.")

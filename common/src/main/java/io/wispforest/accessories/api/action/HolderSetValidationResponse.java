@@ -78,7 +78,7 @@ public class HolderSetValidationResponse<T> extends ActionResponseBase {
 
         var infoType = this.canPerformAction().formatedName(false);
 
-        var registryLangKey = registry.key().location().toLanguageKey();
+        var registryLangKey = registry.key().identifier().toLanguageKey();
 
         if (type.isAdvanced() || type.hasShiftDown()) {
             var tags = ComponentUtils.formatList(

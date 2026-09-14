@@ -253,7 +253,7 @@
   "accessories.commands.slot.validation.removed.valid" :   "'%s' was removed as a valid slot",
   "accessories.commands.slot.validation.removed.invalid" : "'%s' was removed as a invalid slot",
 
-  "gamerule.accessories.keepAccessoryInventory": "Keep Accessory Inventory",
+  "gamerule.accessories.keep_accessory_inventory": "Keep Accessory Inventory",
 
   "#comment": "GUI Related Below",
 

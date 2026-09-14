@@ -1,24 +1,24 @@
 package io.wispforest.accessories.client.gui.components;
 
-import io.wispforest.owo.ui.base.BaseComponent;
-import io.wispforest.owo.ui.core.OwoUIDrawContext;
+import io.wispforest.owo.ui.base.BaseUIComponent;
+import io.wispforest.owo.ui.core.OwoUIGraphics;
 import io.wispforest.owo.ui.core.Sizing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.gui.render.state.BlitRenderState;
+import net.minecraft.client.renderer.state.gui.BlitRenderState;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2f;
 
-public class PixelPerfectTextureComponent extends BaseComponent {
+public class PixelPerfectTextureComponent extends BaseUIComponent {
 
-    private final ResourceLocation texture;
+    private final Identifier texture;
 
-    public PixelPerfectTextureComponent(ResourceLocation texture, int textureWidth, int textureHeight, int scale) {
+    public PixelPerfectTextureComponent(Identifier texture, int textureWidth, int textureHeight, int scale) {
         this(texture, Sizing.fixed(textureWidth * scale), Sizing.fixed(textureHeight * scale));
     }
 
-    public PixelPerfectTextureComponent(ResourceLocation texture, Sizing horizontalSizing, Sizing verticalSizing) {
+    public PixelPerfectTextureComponent(Identifier texture, Sizing horizontalSizing, Sizing verticalSizing) {
         super();
 
         this.texture = texture;
@@ -31,20 +31,20 @@ public class PixelPerfectTextureComponent extends BaseComponent {
     }
 
     @Override
-    public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
+    public void draw(OwoUIGraphics context, int mouseX, int mouseY, float partialTicks, float delta) {
         drawPixelPerfectTextureQuad(context, texture, this.x(), this.y(), this.width(), this.height());
     }
 
-    public static void drawPixelPerfectTextureQuad(OwoUIDrawContext context, ResourceLocation texture, int x1, int y1, int width, int height) {
+    public static void drawPixelPerfectTextureQuad(OwoUIGraphics context, Identifier texture, int x1, int y1, int width, int height) {
         int x2 = x1 + width;
         int y2 = y1 + height;
 
-        var gpuTextureView = Minecraft.getInstance().getTextureManager().getTexture(texture).getTextureView();
+        var abstractTexture = Minecraft.getInstance().getTextureManager().getTexture(texture);
 
-        context.guiRenderState.submitGuiElement(
+        context.guiRenderState.addGuiElement(
             new BlitRenderState(
                 RenderPipelines.GUI_TEXTURED,
-                TextureSetup.singleTexture(gpuTextureView),
+                TextureSetup.singleTexture(abstractTexture.getTextureView(), abstractTexture.getSampler()),
                 new Matrix3x2f(context.pose()),
                 x1, y1,
                 x2, y2,

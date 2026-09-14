@@ -7,14 +7,14 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
 @JeiPlugin
 public class AccessoriesClientJEIPlugin implements IModPlugin {
     @Override
-    public ResourceLocation getPluginUid() {
+    public Identifier getPluginUid() {
         return Accessories.of("main");
     }
 

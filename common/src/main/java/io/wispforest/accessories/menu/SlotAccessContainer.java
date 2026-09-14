@@ -40,7 +40,7 @@ public final class SlotAccessContainer implements Container {
 
         if(index == 40) return null;
 
-        return new SlotAccessContainer(SlotAccess.forContainer(player.getInventory(), index));
+        return new SlotAccessContainer(SlotAccess.of(() -> player.getInventory().getItem(index), stack -> player.getInventory().setItem(index, stack)));
     }
 
     //--

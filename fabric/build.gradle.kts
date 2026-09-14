@@ -9,19 +9,20 @@ plugins {
 
 dependencies {
     // Core Libs
-    modImplementation(libs.fabric.loader)
-    modImplementation(libs.fabric.api)
+    implementation(libs.fabric.loader)
+    implementation(libs.fabric.api)
     // --
 
     // General Libs
-    modCompileOnly(libs.modmenu)
-    modLocalRuntime(libs.modmenu)
+    compileOnly(libs.modmenu)
+    runtimeOnly(libs.modmenu)
     //--
 
 //    modrinth(this::modLocalRuntime, "ok-boomer" to "0.1.3+1.21")
 //    modrinth(this::modLocalRuntime, "sodium" to "${libs.versions.sodium.get()}-fabric")
 
-    modCompileOnly(libs.trinkets)
+    // Trinkets has no 26.x release; the compat layer is disabled until one exists
+    // compileOnly(libs.trinkets)
 }
 
 repositories {}

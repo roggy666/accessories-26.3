@@ -7,6 +7,7 @@ import io.wispforest.endec.StructEndec;
 import io.wispforest.endec.impl.StructEndecBuilder;
 import io.wispforest.owo.serialization.endec.MinecraftEndecs;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.commands.Commands;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -41,7 +42,7 @@ public record ScreenOpen(int entityId, boolean targetLookEntity, AccessoriesMenu
                 livingEntity = living;
 
                 var bl = !player.equals(livingEntity)
-                        && player.getPermissionLevel() == 0
+                        && !Commands.LEVEL_MODERATORS.check(player.permissions())
                         && player.entityInteractionRange() < player.distanceTo(livingEntity);
 
                 // Prevent people without op perms to have the ability to open inv from any distance

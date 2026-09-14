@@ -5,11 +5,11 @@ import io.wispforest.accessories.api.menu.AccessoriesBasedSlot;
 import io.wispforest.accessories.client.DrawUtils;
 import io.wispforest.testccessories.fabric.TestMenu;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
@@ -17,9 +17,9 @@ import java.util.Optional;
 
 public class TestScreen extends AbstractContainerScreen<TestMenu> implements MenuAccess<TestMenu> {
 
-    private static final ResourceLocation SLOT_FRAME = Accessories.of("textures/gui/theme/light/slot.png");
+    private static final Identifier SLOT_FRAME = Accessories.of("textures/gui/theme/light/slot.png");
 
-    private static final ResourceLocation BACKGROUND_PATCH = Accessories.of("background_patch");
+    private static final Identifier BACKGROUND_PATCH = Accessories.of("background_patch");
 
     public TestScreen(TestMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -29,7 +29,7 @@ public class TestScreen extends AbstractContainerScreen<TestMenu> implements Men
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphicsExtractor guiGraphics, float partialTick, int mouseX, int mouseY) {
         Integer minX = null, minY = null, maxX = null, maxY = null;
 
         for (Slot slot : this.menu.slots) {
@@ -68,7 +68,7 @@ public class TestScreen extends AbstractContainerScreen<TestMenu> implements Men
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (this.hoveredSlot instanceof AccessoriesBasedSlot slot && slot.getItem().isEmpty() && slot.accessoriesContainer.slotType() != null) {

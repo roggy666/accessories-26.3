@@ -13,9 +13,12 @@ import io.wispforest.accessories.pond.AccessoriesRenderStateAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.BlockModelResolver;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -174,7 +177,7 @@ public class RenderingFunctionOps {
 
                 var pos = new Vector3f(0, 0, 0)
                         .mulPosition(matrices.last().pose())
-                        .add(Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().toVector3f());
+                        .add(Minecraft.getInstance().gameRenderer.mainCamera().position().toVector3f());
 
                 renderParticle(level, particleData, pos.x(), pos.y(), pos.z());
             }
@@ -243,15 +246,21 @@ public class RenderingFunctionOps {
         }
     }
 
+    private static final BlockModelRenderState BLOCK_MODEL_STATE = new BlockModelRenderState();
+    private static @Nullable BlockModelResolver BLOCK_MODEL_RESOLVER = null;
+
     private static void renderBlock(Minecraft client, BlockState state, @Nullable BlockEntity blockEntity, CameraRenderState cameraState, float partialTick, PoseStack matrices, SubmitNodeCollector collector, int packedLight, int packedOverlay, int color) {
         if (state.getRenderShape() != RenderShape.INVISIBLE) {
-            collector.submitBlock(matrices, state, packedLight, packedOverlay, 0);
+            if (BLOCK_MODEL_RESOLVER == null) BLOCK_MODEL_RESOLVER = new BlockModelResolver(client.getModelManager());
+
+            BLOCK_MODEL_RESOLVER.update(BLOCK_MODEL_STATE, state, BlockDisplayContext.create());
+            BLOCK_MODEL_STATE.submit(matrices, collector, packedLight, packedOverlay, 0);
         }
 
         if (blockEntity != null) {
             var dispatcher = client.getBlockEntityRenderDispatcher();
 
-            var медведь = dispatcher.tryExtractRenderState(blockEntity, partialTick, null);
+            var медведь = dispatcher.tryExtractRenderState(blockEntity, partialTick, null, false);
 
             if (медведь != null) {
                 dispatcher.submit(медведь, matrices, collector, cameraState);

@@ -81,7 +81,7 @@ public class AccessoriesRenderLayer<S extends LivingEntityRenderState, M extends
         var shouldUpdate = lastUpdated20th != current20th;
         if (shouldUpdate) lastUpdated20th = current20th;
 
-        var selected = (client.screen instanceof AccessoriesScreenBase<?> screenBase)
+        var selected = (client.gui.screen() instanceof AccessoriesScreenBase<?> screenBase)
             ? screenBase.getSelectedSlotIf(AccessoriesBasedSlot.class)
             : null;
 

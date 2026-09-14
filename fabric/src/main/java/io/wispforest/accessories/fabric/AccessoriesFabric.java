@@ -45,7 +45,7 @@ import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -53,7 +53,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 
 import java.util.Objects;
 
@@ -88,7 +88,7 @@ public class AccessoriesFabric implements ModInitializer {
         AccessoriesNetworking.init();
 
         SyncedDataHelperManager.init(AccessoriesNetworking.CHANNEL, playerConsumer -> {
-            ResourceLocation beforeDefaultPhase = Accessories.of("before_default_phase");
+            Identifier beforeDefaultPhase = Accessories.of("before_default_phase");
 
             ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.addPhaseOrdering(beforeDefaultPhase, Event.DEFAULT_PHASE);
 
@@ -101,7 +101,7 @@ public class AccessoriesFabric implements ModInitializer {
         Accessories.registerCriteria();
         CommandGenerators.registerAllArgumentTypes(new ArgumentRegistrationCallback() {
             @Override
-            public <A extends ArgumentType<?>, T> RecordArgumentTypeInfo<A, T> register(ResourceLocation location, Class<A> clazz, RecordArgumentTypeInfo<A, T> info) {
+            public <A extends ArgumentType<?>, T> RecordArgumentTypeInfo<A, T> register(Identifier location, Class<A> clazz, RecordArgumentTypeInfo<A, T> info) {
                 ArgumentTypeRegistry.registerArgumentType(location, clazz, info);
 
                 return info;

@@ -2,7 +2,7 @@ package io.wispforest.accessories.mixin.sodium;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import io.wispforest.accessories.client.MPOATVConstructingVertexConsumer;
 import net.caffeinemc.mods.sodium.api.vertex.attributes.common.PositionAttribute;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
@@ -17,7 +17,7 @@ public abstract class MPOATVConstructingVertexConsumerMixin_SodiumImpl implement
     @Override
     public void push(MemoryStack memoryStack, long ptr, int count, VertexFormat format) {
         long stride = format.getVertexSize();
-        long positionOffset = format.getOffset(VertexFormatElement.POSITION);
+        long positionOffset = format.getElement(DefaultVertexFormat.POSITION_SEMANTIC_NAME).offset();
 
         for(int vertexIndex = 0; vertexIndex < count; ++vertexIndex) {
             var positionPtr = ptr + positionOffset;

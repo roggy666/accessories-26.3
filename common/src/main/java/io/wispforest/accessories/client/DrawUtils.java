@@ -1,23 +1,23 @@
 package io.wispforest.accessories.client;
 
 import io.wispforest.owo.ui.core.Color;
-import io.wispforest.owo.ui.core.OwoUIDrawContext;
+import io.wispforest.owo.ui.core.OwoUIGraphics;
 import io.wispforest.owo.ui.core.OwoUIPipelines;
 import io.wispforest.owo.ui.renderstate.GradientQuadElementRenderState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.data.AtlasIds;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2f;
 import org.joml.Vector4f;
 
 public class DrawUtils {
 
-    public static void drawWithSpectrum(GuiGraphics ctx, int x, int y, int blitOffset, int width, int height, ResourceLocation texture, float alpha) {
+    public static void drawWithSpectrum(GuiGraphicsExtractor ctx, int x, int y, int blitOffset, int width, int height, Identifier texture, float alpha) {
         TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager()
             .getAtlasOrThrow(AtlasIds.GUI)
             .getSprite(texture);
@@ -25,11 +25,11 @@ public class DrawUtils {
         innerDrawWithSpectrum(ctx, sprite.atlasLocation(), x, x + width, y, y + height, blitOffset, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1(), new Vector4f(alpha));
     }
 
-    public static void drawWithSpectrum(GuiGraphics ctx, int x, int y, int blitOffset, int width, int height, TextureAtlasSprite sprite, float alpha) {
+    public static void drawWithSpectrum(GuiGraphicsExtractor ctx, int x, int y, int blitOffset, int width, int height, TextureAtlasSprite sprite, float alpha) {
         innerDrawWithSpectrum(ctx, sprite.atlasLocation(), x, x + width, y, y + height, blitOffset, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1(), new Vector4f(alpha));
     }
 
-    public static void drawWithSpectrum(GuiGraphics ctx, int x, int y, int blitOffset, int width, int height, TextureAtlasSprite sprite, Vector4f alphaValues) {
+    public static void drawWithSpectrum(GuiGraphicsExtractor ctx, int x, int y, int blitOffset, int width, int height, TextureAtlasSprite sprite, Vector4f alphaValues) {
         innerDrawWithSpectrum(ctx, sprite.atlasLocation(), x, x + width, y, y + height, blitOffset, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1(), alphaValues);
     }
 
@@ -37,11 +37,13 @@ public class DrawUtils {
     // Y: Top Right
     // Z: Bottom Left
     // W: Bottom Right
-    private static void innerDrawWithSpectrum(GuiGraphics guiGraphics, ResourceLocation atlasLocation, int x1, int x2, int y1, int y2, int blitOffset, float minU, float maxU, float minV, float maxV, Vector4f alphaValues) {
-        guiGraphics.guiRenderState.submitGuiElement(
+    private static void innerDrawWithSpectrum(GuiGraphicsExtractor guiGraphics, Identifier atlasLocation, int x1, int x2, int y1, int y2, int blitOffset, float minU, float maxU, float minV, float maxV, Vector4f alphaValues) {
+        var atlasTexture = Minecraft.getInstance().getTextureManager().getTexture(atlasLocation);
+
+        guiGraphics.guiRenderState.addGuiElement(
             new BlitSpectrumRenderState(
                 AccessoriesPipelines.SPECTRUM,
-                TextureSetup.noTexture(),
+                TextureSetup.singleTexture(atlasTexture.getTextureView(), atlasTexture.getSampler()),
                 new Matrix3x2f(guiGraphics.pose()),
                 x1, y1, x2, y2,
                 minU, maxU,
@@ -52,7 +54,7 @@ public class DrawUtils {
         );
     }
 
-    public static void drawRectOutlineWithSpectrum(OwoUIDrawContext ctx, int x, int y, int width, int height, float alpha, boolean vertical) {
+    public static void drawRectOutlineWithSpectrum(OwoUIGraphics ctx, int x, int y, int width, int height, float alpha, boolean vertical) {
         innerFill(ctx, x, y, width, 1, alpha, !vertical);
         innerFill(ctx, x, y + height - 1, width, 1, alpha, !vertical);
 
@@ -60,7 +62,7 @@ public class DrawUtils {
         innerFill(ctx, x + width - 1, y + 1, 1, height - 2, alpha, vertical);
     }
 
-    private static void innerFill(GuiGraphics guiGraphics, int x, int y, int width, int height, float alpha, boolean vertical) {
+    private static void innerFill(GuiGraphicsExtractor guiGraphics, int x, int y, int width, int height, float alpha, boolean vertical) {
         var multiplier = (float) ((System.currentTimeMillis() / 20d % 360d) / 360d);
 
         var topValue = 1f - multiplier;
@@ -70,7 +72,7 @@ public class DrawUtils {
         var scissorRect = guiGraphics.scissorStack.peek();
 
         // TODO: SEEMS BROKEN WHEN ANYTHING IS MANIPULATING THE MATRIX STACK SOOOOOO
-        guiGraphics.guiRenderState.submitGuiElement(
+        guiGraphics.guiRenderState.addGuiElement(
             new GradientQuadElementRenderState(
                 OwoUIPipelines.GUI_HSV,
                 matrix,
@@ -88,32 +90,32 @@ public class DrawUtils {
         return new ScreenRectangle(x1, y1, Math.abs(x2 - x1), Math.abs(y2 - y1))/*.transformMaxBounds(matrix3x2f)*/;
     }
 
-    public static void blitSprite(GuiGraphics context, ResourceLocation atlasLocation, int x, int y, int width, int height) {
+    public static void blitSprite(GuiGraphicsExtractor context, Identifier atlasLocation, int x, int y, int width, int height) {
         blitSprite(context, atlasLocation, x, y, width, height, -1);
     }
 
-    public static void blitSprite(GuiGraphics context, ResourceLocation atlasLocation, int x, int y, int width, int height, int blitOffset) {
+    public static void blitSprite(GuiGraphicsExtractor context, Identifier atlasLocation, int x, int y, int width, int height, int blitOffset) {
         context.blitSprite(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y, width, height, blitOffset);
     }
 
-    public static void blit(GuiGraphics context, ResourceLocation atlasLocation, int x, int y, int width, int height) {
+    public static void blit(GuiGraphicsExtractor context, Identifier atlasLocation, int x, int y, int width, int height) {
         blit(context, atlasLocation, x, y, 0, 0, width, height, width, height);
     }
 
-    public static void blit(GuiGraphics context, ResourceLocation atlasLocation, int x, int y, int uWidth, int vHeight, int textureWidth, int textureHeight) {
+    public static void blit(GuiGraphicsExtractor context, Identifier atlasLocation, int x, int y, int uWidth, int vHeight, int textureWidth, int textureHeight) {
         blit(context, atlasLocation, x, y, 0, 0, uWidth, vHeight, textureWidth, textureHeight);
     }
 
-    public static void blit(GuiGraphics context, ResourceLocation atlasLocation, int x, int y, float uOffset, float vOffset, int uWidth, int vHeight, int textureWidth, int textureHeight) {
+    public static void blit(GuiGraphicsExtractor context, Identifier atlasLocation, int x, int y, float uOffset, float vOffset, int uWidth, int vHeight, int textureWidth, int textureHeight) {
         context.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y, uOffset, vOffset, uWidth, vHeight, uWidth, vHeight, textureWidth, textureHeight);
     }
 
-    public static void blit(GuiGraphics context, ResourceLocation atlasLocation, int x, int y, float uOffset, float vOffset, int uWidth, int vHeight, int width, int height, int textureWidth, int textureHeight) {
+    public static void blit(GuiGraphicsExtractor context, Identifier atlasLocation, int x, int y, float uOffset, float vOffset, int uWidth, int vHeight, int width, int height, int textureWidth, int textureHeight) {
         context.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y, uOffset, vOffset, uWidth, vHeight, width, height, textureWidth, textureHeight, -1);
     }
 
     // TODO: THIS CURRENTLY DOSE NOT MAKE THE ICONS WHITE AT ALL AND REQUIRES HEAVY MODIFICATION SIMILAR TO OWO BLUR TO SETUP THE UNIFORMS CORRECTLY
-    public static void blitSpriteWithColor(GuiGraphics context, TextureAtlasSprite sprite, int x, int y, int width, int height, Color color) {
+    public static void blitSpriteWithColor(GuiGraphicsExtractor context, TextureAtlasSprite sprite, int x, int y, int width, int height, Color color) {
         context.blitSprite(RenderPipelines.GUI_TEXTURED/*location -> AccessoriesPipelines.COLORED_GUI_TEXTURED.apply(color, location)*/, sprite, x, y, width, height, color.argb());
     }
 }

@@ -36,9 +36,9 @@ import io.wispforest.accessories.pond.DeferredTooltipGetter;
 import io.wispforest.accessories.pond.TooltipFlagExtended;
 import io.wispforest.accessories.utils.ComponentOps;
 import io.wispforest.owo.mixin.ui.SlotAccessor;
-import io.wispforest.owo.ui.base.BaseOwoHandledScreen;
+import io.wispforest.owo.ui.base.BaseOwoContainerScreen;
 import io.wispforest.owo.ui.component.ButtonComponent;
-import io.wispforest.owo.ui.container.Containers;
+import io.wispforest.owo.ui.container.UIContainers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.ScrollContainer;
 import io.wispforest.owo.ui.container.StackLayout;
@@ -48,13 +48,13 @@ import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.booleans.BooleanUnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.ErrorScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.*;
@@ -74,14 +74,14 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, AccessoriesMenu> implements AccessoriesScreenBase<AccessoriesMenu>, ContainerScreenExtension, PlayerOptionsAccess {
+public class AccessoriesScreen extends BaseOwoContainerScreen<FlowLayout, AccessoriesMenu> implements AccessoriesScreenBase<AccessoriesMenu>, ContainerScreenExtension, PlayerOptionsAccess {
 
     private final @Nullable AbstractContainerScreen<AbstractContainerMenu> prevScreen;
 
     public AccessoriesScreen(AccessoriesMenu handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
 
-        this.prevScreen = (Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> prevScreen)
+        this.prevScreen = (Minecraft.getInstance().gui.screen() instanceof AbstractContainerScreen<?> prevScreen)
                 ? (AbstractContainerScreen<AbstractContainerMenu>) prevScreen
                 : null;
 
@@ -92,7 +92,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
 
     @Override
     protected @NotNull OwoUIAdapter<FlowLayout> createAdapter() {
-        return OwoUIAdapter.create(this, Containers::verticalFlow);
+        return OwoUIAdapter.create(this, UIContainers::verticalFlow);
     }
 
     protected FlowLayout rootComponent() {
@@ -117,7 +117,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
                 var ids = unpackRules.pollLast();
 
                 stream = stream.flatMap(component -> {
-                    if (component instanceof ParentComponent parent) {
+                    if (component instanceof ParentUIComponent parent) {
                         if (ids.isEmpty()) return parent.children().stream();
 
                         if (parent.id() != null) {
@@ -150,7 +150,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
     }
 
     @Override
-    public <C extends io.wispforest.owo.ui.core.Component> C component(Class<C> expectedClass, String id) {
+    public <C extends io.wispforest.owo.ui.core.UIComponent> C component(Class<C> expectedClass, String id) {
         return super.component(expectedClass, id);
     }
 
@@ -247,7 +247,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
     @Override
     protected void init() {
         if (!menu.isValidMenu()) {
-            Minecraft.getInstance().setScreen(
+            Minecraft.getInstance().gui.setScreen(
                     new ErrorScreen(
                             Component.literal("Accessories Screen Opening Error!"),
                             Component.literal("Unable to open Accessories Screen due to desync with the Server!")
@@ -376,7 +376,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
             state = fast ? State.FastDarkening : State.Darkening;
         }
 
-        public void render(GuiGraphics guiGraphics, Slot slot, boolean isSideBySideSlots) {
+        public void render(GuiGraphicsExtractor guiGraphics, Slot slot, boolean isSideBySideSlots) {
             int x = slot.x, y = slot.y;
 
             if (!isDarkened(slot)) return;
@@ -465,7 +465,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
 
 
     @Override
-    protected void renderSlotHighlightBack(GuiGraphics guiGraphics) {
+    protected void extractSlotHighlightBack(GuiGraphicsExtractor guiGraphics) {
         var slotToEquipCheck = getSlotToEquipCheckMap(this.getMenu().getCarried());
 
         if (this.hoveredSlot == null || !this.hoveredSlot.isHighlightable() || !slotToEquipCheck.getOrDefault(hoveredSlot).isValid()) {
@@ -479,7 +479,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
     }
 
     @Override
-    protected void renderSlotHighlightFront(GuiGraphics guiGraphics) {
+    protected void extractSlotHighlightFront(GuiGraphicsExtractor guiGraphics) {
         var access = getSlotToEquipCheckMap(this.getMenu().getCarried());
 
         var isSideBySideSlots = this.getDefaultedData(PlayerOptions.SIDE_BY_SIDE_SLOTS);
@@ -499,7 +499,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
         renderWithClippingCheck(guiGraphics, x, y, (graphics) -> graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, x, y, 24, 24));
     }
 
-    private void renderWithClippingCheck(GuiGraphics guiGraphics, int x, int y, Consumer<GuiGraphics> drawCall) {
+    private void renderWithClippingCheck(GuiGraphicsExtractor guiGraphics, int x, int y, Consumer<GuiGraphicsExtractor> drawCall) {
         if (!(hoveredSlot instanceof AccessoriesBasedSlot basedSlot) || (basedSlot.isCosmetic && this.getDefaultedData(PlayerOptions.SIDE_BY_SIDE_SLOTS))) {
             drawCall.accept(guiGraphics);
 
@@ -525,7 +525,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
     private final TooltipComponentBuilderImpl validationTooltipComponents = (TooltipComponentBuilderImpl) TooltipComponentBuilder.of();
 
     @Override
-    protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
+    protected void extractTooltip(GuiGraphicsExtractor guiGraphics, int x, int y) {
         boolean bl = false;
 
         if(this.hoveredSlot != null) {
@@ -540,7 +540,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
 
         AccessoriesScreenBase.setPositioner(bl);
 
-        super.renderTooltip(guiGraphics, x, y);
+        super.extractTooltip(guiGraphics, x, y);
 
         if (this.hoveredSlot instanceof AccessoriesBasedSlot slot && ExtraSlotTypeProperties.getProperty(slot.slotName(), true).allowTooltipInfo()) {
             var client = Minecraft.getInstance();
@@ -717,8 +717,8 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
     private final List<Line3d> linesToAccessoryPositions = new ArrayList<>();
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
-        super.renderBg(guiGraphics, partialTick, mouseX, mouseY);
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTick);
 
         //--
 
@@ -742,12 +742,12 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         updateSlotDarkening(partialTick);
 
-        this.renderBg(guiGraphics, partialTick, mouseX, mouseY);
+        this.extractBackground(guiGraphics, mouseX, mouseY, partialTick);
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
         if (Accessories.config().screenOptions.hoveredOptions.clickbait()) {
             hoveredAccessoryPositons.forEach(pos -> {
@@ -798,8 +798,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
 //                }
 //            });
 
-            minecraft.renderBuffers().bufferSource().endBatch(RenderType.LINES);
-
+            // TODO: line rendering above needs porting to the GUI render state API
             linesToAccessoryPositions.clear();
         }
     }
@@ -813,7 +812,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
     public static final ComponentKey<FlowLayout> GROUP_FILTER = ComponentKey.of(FlowLayout.class, "group_filter_holder");
     public static final ComponentKey<FlowLayout> BOTTOM_HOLDER = ComponentKey.of(FlowLayout.class, "bottom_component_holder");
     public static final ComponentKey<FlowLayout> CRAFTING_GRID = ComponentKey.of(FlowLayout.class, "crafting_grid_layout");
-    public static final ComponentKey<io.wispforest.owo.ui.core.Component> CRAFTING_GRID_BTN = ComponentKey.of(io.wispforest.owo.ui.core.Component.class, "crafting_grid_btn");
+    public static final ComponentKey<io.wispforest.owo.ui.core.UIComponent> CRAFTING_GRID_BTN = ComponentKey.of(io.wispforest.owo.ui.core.UIComponent.class, "crafting_grid_btn");
     public static final ComponentKey<StackLayout> ENTITY_PANEL = ComponentKey.of(StackLayout.class, "entity_button_panel");
 
     @Override
@@ -829,7 +828,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
                 .verticalAlignment(VerticalAlignment.CENTER)
                 .surface(Surface.VANILLA_TRANSLUCENT);
 
-        var baseChildren = new ArrayList<io.wispforest.owo.ui.core.Component>();
+        var baseChildren = new ArrayList<io.wispforest.owo.ui.core.UIComponent>();
 
         var accessoriesComponent = createAccessoriesComponent();
 
@@ -851,13 +850,13 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
 
         this.enableSlot(offHandIndex);
 
-        var offhandComponent = Containers.verticalFlow(Sizing.content(), Sizing.content())
+        var offhandComponent = UIContainers.verticalFlow(Sizing.content(), Sizing.content())
                 .child(this.slotAsComponent(offHandIndex).margins(Insets.of(1)))
                 .padding(Insets.of(7, 7, 7, 4))
                 .allowOverflow(true);
 
         var craftingGridArea = CRAFTING_GRID.withId(
-            Containers.verticalFlow(Sizing.content(), Sizing.content())
+            UIContainers.verticalFlow(Sizing.content(), Sizing.content())
                 .positioning(Positioning.absolute(162, -7))
                 .configure((FlowLayout component) -> {
                     if (this.getDefaultedData(PlayerOptions.SHOW_CRAFTING_GRID)) {
@@ -883,14 +882,14 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
                 AccessoriesScreen.this.isOutsideInvArea = !isInBoundingBox(mouseX, mouseY);
             }
         }.child(
-                Containers.verticalFlow(Sizing.content(), Sizing.content())
+                UIContainers.verticalFlow(Sizing.content(), Sizing.content())
                     .child(offhandComponent)
                     .allowOverflow(true)
                     .positioning(Positioning.absolute(-(18 + 4 + 7), 51))
             )
             .child(
                 BOTTOM_HOLDER.withId(
-                    Containers.verticalFlow(Sizing.fixed(162), Sizing.fixed(76))
+                    UIContainers.verticalFlow(Sizing.fixed(162), Sizing.fixed(76))
                         .child(playerInv)
                 )
             )
@@ -918,22 +917,22 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
         //--
 
         var primaryLayout = ARMOR_ENTITY.withId(
-            (FlowLayout) Containers.horizontalFlow(Sizing.content(), Sizing.fixed(140))
+            (FlowLayout) UIContainers.horizontalFlow(Sizing.content(), Sizing.fixed(140))
                 .gap(2)
                 .horizontalAlignment(HorizontalAlignment.CENTER)
         );
 
         {
-            var armorSlotsLayout = Containers.verticalFlow(Sizing.content(), Sizing.content())
+            var armorSlotsLayout = UIContainers.verticalFlow(Sizing.content(), Sizing.content())
                     .configure((FlowLayout layout) -> layout.allowOverflow(true));
 
-            var outerLeftArmorLayout = Containers.horizontalFlow(Sizing.content(), Sizing.content())
+            var outerLeftArmorLayout = UIContainers.horizontalFlow(Sizing.content(), Sizing.content())
                     .child(armorSlotsLayout);
 
-            var cosmeticArmorSlotsLayout = Containers.verticalFlow(Sizing.content(), Sizing.content())
+            var cosmeticArmorSlotsLayout = UIContainers.verticalFlow(Sizing.content(), Sizing.content())
                             .configure((FlowLayout layout) -> layout.allowOverflow(true));
 
-            var outerRightArmorLayout = Containers.horizontalFlow(Sizing.content(), Sizing.content())
+            var outerRightArmorLayout = UIContainers.horizontalFlow(Sizing.content(), Sizing.content())
                     .child(cosmeticArmorSlotsLayout);
 
             for (int i = 0; i < menu.addedArmorSlots() / 2; i++) {
@@ -949,9 +948,9 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
 
             //--
 
-            var entityContainer = Containers.stack(Sizing.content(), Sizing.fixed(126 + 14))
+            var entityContainer = UIContainers.stack(Sizing.content(), Sizing.fixed(126 + 14))
                     .child(
-                            Containers.verticalFlow(Sizing.content(), Sizing.content())
+                            UIContainers.verticalFlow(Sizing.content(), Sizing.content())
                                     .child(
                                             createEntityComponent()
                                     ).surface((ctx, component) -> {
@@ -966,7 +965,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
                                     .id("entity_renderer_holder")
                     )
                     .child(
-                            Containers.verticalFlow(Sizing.fixed(0), Sizing.fixed(0))
+                            UIContainers.verticalFlow(Sizing.fixed(0), Sizing.fixed(0))
                                     .surface((ctx, component) -> {
                                         // TODO: MAKE NO EQUIPMENT SLOT VARIANT...
                                         var surfaceType = Math.max(1, Math.min((this.getMenu().addedArmorSlots() / 2), 4)) + "_slots";
@@ -1084,7 +1083,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
 
         //--
 
-        var baseLayout = Containers.verticalFlow(Sizing.content(), Sizing.content())
+        var baseLayout = UIContainers.verticalFlow(Sizing.content(), Sizing.content())
                 .gap(2)
                 .children(baseChildren.reversed())
                 .allowOverflow(true);
@@ -1107,7 +1106,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
         setupPadding(this.topComponent, hasSideBar, primaryLayout);
     }
 
-    public void setupPadding(AccessoriesContainingLayout<?> accessoriesComponent, boolean hasSideBar, ParentComponent primaryLayout) {
+    public void setupPadding(AccessoriesContainingLayout<?> accessoriesComponent, boolean hasSideBar, ParentUIComponent primaryLayout) {
         if (this.getDefaultedData(PlayerOptions.ENTITY_CENTERED)) {
             // (((Accessories Component Width) + 3) | 0) + (120) + ((3 + (30)) | 0
             var padding = 0;
@@ -1153,7 +1152,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
         rebuildComponentRectangles = true;
     }
 
-    public io.wispforest.owo.ui.core.Component createEntityComponent() {
+    public io.wispforest.owo.ui.core.UIComponent createEntityComponent() {
         var sideBySideView = this.getDefaultedData(PlayerOptions.SIDE_BY_SIDE_ENTITY);
 
         return InventoryEntityComponent.of(Sizing.fixed(sideBySideView ? 162 : 108), Sizing.fixed(126), this.getMenu().targetEntityDefaulted())
@@ -1271,15 +1270,15 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
 
     //--
     @Nullable
-    private io.wispforest.owo.ui.core.Component createSideBarOptions() {
+    private io.wispforest.owo.ui.core.UIComponent createSideBarOptions() {
         var groupFilterComponent = createGroupFilters();
 
         if (groupFilterComponent == null) return null;
 
-        var accessoriesTogglePanel = TOGGLE_PANEL.withId(Containers.verticalFlow(Sizing.content(), Sizing.content()));
+        var accessoriesTogglePanel = TOGGLE_PANEL.withId(UIContainers.verticalFlow(Sizing.content(), Sizing.content()));
 
         return SIDE_BAR.withId(
-            Containers.verticalFlow(Sizing.content(), Sizing.content())
+            UIContainers.verticalFlow(Sizing.content(), Sizing.content())
                 .child(
                     accessoriesTogglePanel.child(groupFilterComponent)
                         .padding(Insets.of(7))
@@ -1315,7 +1314,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
     private ExtendedScrollContainer groupFilterScrollable = null;
 
     @Nullable
-    private io.wispforest.owo.ui.core.Component createGroupFilters() {
+    private io.wispforest.owo.ui.core.UIComponent createGroupFilters() {
         if (!this.getDefaultedData(PlayerOptions.SHOW_GROUP_FILTER)) return null;
 
         var capability = this.targetEntityDefaulted().accessoriesCapability();
@@ -1325,7 +1324,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
         if (groups.isEmpty()) return null;
 
         var usedSlots = this.getMenu().getUsedSlots();
-        var groupButtons = new ArrayList<io.wispforest.owo.ui.core.Component>();
+        var groupButtons = new ArrayList<io.wispforest.owo.ui.core.UIComponent>();
 
         // Filter Groups that have valid slots for the given target entity and are not from the unique slot API
         for (var group : groups) {
@@ -1347,7 +1346,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
 
         if (groupButtons.isEmpty()) return null;
 
-        var baseButtonLayout = (ParentComponent) Containers.verticalFlow(Sizing.content(), Sizing.content())
+        var baseButtonLayout = (ParentUIComponent) UIContainers.verticalFlow(Sizing.content(), Sizing.content())
                 .children(groupButtons)
                 .gap(1);
 
@@ -1374,7 +1373,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
         }
 
         return GROUP_FILTER.withId(
-            Containers.verticalFlow(Sizing.content(), Sizing.content())
+            UIContainers.verticalFlow(Sizing.content(), Sizing.content())
                 .child(
                     ComponentUtils.createIconButton(
                             (btn) -> {
@@ -1453,11 +1452,11 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
         gridHolder.child(createCraftingGrid());
     }
 
-    private io.wispforest.owo.ui.core.Component createCraftingGrid() {
+    private io.wispforest.owo.ui.core.UIComponent createCraftingGrid() {
         return ComponentUtils.createCraftingComponent(0, this::slotAsComponent, this::enableSlot, true);
     }
 
-    private io.wispforest.owo.ui.core.Component createCraftingToggleButton() {
+    private io.wispforest.owo.ui.core.UIComponent createCraftingToggleButton() {
         return ComponentUtils.createIconButton(
             btn -> {
                 AccessoriesNetworking
@@ -1540,7 +1539,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
         }
 
         @Override
-        public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
+        public void draw(OwoUIGraphics context, int mouseX, int mouseY, float partialTicks, float delta) {
             // DO NOT CALL SUPER AS SCISSOR ISSUES OCCUR
 
             this.didDraw = true;
@@ -1549,7 +1548,7 @@ public class AccessoriesScreen extends BaseOwoHandledScreen<FlowLayout, Accessor
         }
 
         @Override
-        public void drawTooltip(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
+        public void drawTooltip(OwoUIGraphics context, int mouseX, int mouseY, float partialTicks, float delta) {
             var slot = this.slot();
 
             if(slot != null) {

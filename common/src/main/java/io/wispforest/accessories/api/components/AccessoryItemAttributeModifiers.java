@@ -16,7 +16,7 @@ import io.wispforest.owo.serialization.endec.MinecraftEndecs;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.ApiStatus;
@@ -41,12 +41,12 @@ public record AccessoryItemAttributeModifiers(List<AccessoryItemAttributeModifie
         return new AccessoryItemAttributeModifiers.Builder();
     }
 
-    public boolean hasModifier(Holder<Attribute> holder, ResourceLocation location) {
+    public boolean hasModifier(Holder<Attribute> holder, Identifier location) {
         return getModifier(holder, location) != null;
     }
 
     @Nullable
-    public AttributeModifier getModifier(Holder<Attribute> holder, ResourceLocation location) {
+    public AttributeModifier getModifier(Holder<Attribute> holder, Identifier location) {
         for (var entry : this.modifiers) {
             if(entry.attribute.equals(holder) && entry.modifier.id().equals(location)) return entry.modifier();
         }
@@ -74,7 +74,7 @@ public record AccessoryItemAttributeModifiers(List<AccessoryItemAttributeModifie
         return new AccessoryItemAttributeModifiers(builder.build(), this.showInTooltip());
     }
 
-    public AccessoryItemAttributeModifiers withoutModifier(Holder<Attribute> holder, ResourceLocation location) {
+    public AccessoryItemAttributeModifiers withoutModifier(Holder<Attribute> holder, Identifier location) {
         var builder = ImmutableList.<AccessoryItemAttributeModifiers.Entry>builderWithExpectedSize(this.modifiers.size() + 1);
 
         this.modifiers.forEach(entry -> {
@@ -188,13 +188,13 @@ public record AccessoryItemAttributeModifiers(List<AccessoryItemAttributeModifie
                     }
 
                     return context.requireAttributeValue(RegistriesAttribute.REGISTRIES)
-                            .registryManager()
+                            .registryAccess()
                             .lookupOrThrow(Registries.ATTRIBUTE)
                             .getKey(attribute);
                 }
         );
 
-        public boolean matches(Holder<Attribute> attribute, ResourceLocation id) {
+        public boolean matches(Holder<Attribute> attribute, Identifier id) {
             return attribute.equals(this.attribute) && this.modifier.is(id);
         }
 

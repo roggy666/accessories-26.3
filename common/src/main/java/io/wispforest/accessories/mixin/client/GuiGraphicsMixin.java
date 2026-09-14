@@ -10,12 +10,12 @@ import io.wispforest.accessories.pond.DefaultTooltipPositionerExt;
 import io.wispforest.accessories.pond.DeferredTooltipGetter;
 import io.wispforest.accessories.pond.ScissorStackManipulation;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -28,11 +28,11 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
-@Mixin(GuiGraphics.class)
+@Mixin(GuiGraphicsExtractor.class)
 public abstract class GuiGraphicsMixin implements ScissorStackManipulation, DeferredTooltipGetter {
 
     @Accessor("scissorStack")
-    public abstract GuiGraphics.ScissorStack accessories$scissorStack();
+    public abstract GuiGraphicsExtractor.ScissorStack accessories$scissorStack();
 
     @Shadow
     private @Nullable Runnable deferredTooltip;
@@ -43,7 +43,7 @@ public abstract class GuiGraphicsMixin implements ScissorStackManipulation, Defe
     }
 
     @WrapMethod(method = "setTooltipForNextFrameInternal")
-    private void accessories$adjustPositioner(Font font, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable ResourceLocation background, boolean focused, Operation<Void> original) {
+    private void accessories$adjustPositioner(Font font, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier background, boolean focused, Operation<Void> original) {
         // TODO: MAYBE GOOD IDEA TO CHECK AGAINST REFERENCE OF THE SINGULAR USED INSTANCE
         if (positioner instanceof DefaultTooltipPositioner defaultTooltipPositioner) {
             var basePositioner = AccessoriesScreenBase.ALTERATIVE_POSITIONER.getValue();
@@ -56,14 +56,14 @@ public abstract class GuiGraphicsMixin implements ScissorStackManipulation, Defe
         original.call(font, components, x, y, positioner, background, focused);
     }
 
-    @WrapOperation(method = "setTooltipForNextFrameInternal", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/GuiGraphics;deferredTooltip:Ljava/lang/Runnable;", opcode = Opcodes.PUTFIELD))
-    private void accessories$wrapTooltipRenderCall(GuiGraphics instance, Runnable value, Operation<Void> original,
+    @WrapOperation(method = "setTooltipForNextFrameInternal", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;deferredTooltip:Ljava/lang/Runnable;", opcode = Opcodes.PUTFIELD))
+    private void accessories$wrapTooltipRenderCall(GuiGraphicsExtractor instance, Runnable value, Operation<Void> original,
                       @Local(argsOnly = true) Font font,
                       @Local(argsOnly = true) List<ClientTooltipComponent> components,
                       @Local(argsOnly = true, ordinal = 0) int x,
                       @Local(argsOnly = true, ordinal = 1) int y,
                       @Local(argsOnly = true) ClientTooltipPositioner positioner,
-                      @Local(argsOnly = true) @Nullable ResourceLocation background,
+                      @Local(argsOnly = true) @Nullable Identifier background,
                       @Local(argsOnly = true) boolean focused) {
         original.call(instance, new DeferredTooltip(font, components, x, y, positioner, background, focused, value));
     }
@@ -73,7 +73,7 @@ public abstract class GuiGraphicsMixin implements ScissorStackManipulation, Defe
         return this.deferredTooltip instanceof DeferredTooltip tooltip ? tooltip : null;
     }
 
-    @Mixin(GuiGraphics.ScissorStack.class)
+    @Mixin(GuiGraphicsExtractor.ScissorStack.class)
     public abstract static class ScissorStackMixin implements ScissorStackManipulation {
         @Accessor("stack")
         public abstract Deque<ScreenRectangle> accessories$stack();
