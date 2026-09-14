@@ -36,3 +36,10 @@ sourceSets {
 }
 
 repositories {}
+// The shadow jar is the real mod artifact (plain jar is disabled), so publish that instead of the java component's jar
+afterEvaluate {
+    publishing.publications.named<MavenPublication>("mavenCommon") {
+        setArtifacts(listOf(tasks.shadowJar))
+        artifact(tasks.named("sourcesJar")) { classifier = "sources" }
+    }
+}
