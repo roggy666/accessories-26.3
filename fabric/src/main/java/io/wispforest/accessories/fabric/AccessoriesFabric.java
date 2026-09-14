@@ -28,7 +28,7 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -36,8 +36,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.fabricmc.fabric.api.lookup.v1.entity.EntityApiLookup;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -131,7 +129,7 @@ public class AccessoriesFabric implements ModInitializer {
 
         UseEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> AccessoriesEventHandler.attemptEquipOnEntity(player, hand, entity));
 
-        ServerTickEvents.START_WORLD_TICK.register(AccessoriesEventHandler::onWorldTick);
+        ServerTickEvents.START_LEVEL_TICK.register(AccessoriesEventHandler::onWorldTick);
 
         ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> {
             if(!joined) return;
@@ -170,7 +168,7 @@ public class AccessoriesFabric implements ModInitializer {
         });
 
         ResourceLoader.get(PackType.SERVER_DATA)
-            .registerReloader(
+            .registerReloadListener(
                 Accessories.DATA_RELOAD_HOOK,
                 (ResourceManagerReloadListener) manager -> AccessoriesEventHandler.dataReloadOccurred = true
             );
@@ -184,7 +182,7 @@ public class AccessoriesFabric implements ModInitializer {
             });
         });
 
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+        ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> {
             AccessoriesNetworking.CHANNEL.serverHandle(player).send(new InvalidateEntityCache(player.getId()));
 
             AccessoriesEventHandler.onTracking(player, player);

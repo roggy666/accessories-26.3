@@ -25,4 +25,14 @@ dependencies {
     // compileOnly(libs.trinkets)
 }
 
+// The Trinkets compat mixin is @Pseudo but still needs the Trinkets API on the compile classpath,
+// so it is left out of the build (and of accessories-fabric.mixins.json) while the dependency is disabled
+sourceSets {
+    main {
+        java {
+            exclude("**/mixin/trinkets/**")
+        }
+    }
+}
+
 repositories {}

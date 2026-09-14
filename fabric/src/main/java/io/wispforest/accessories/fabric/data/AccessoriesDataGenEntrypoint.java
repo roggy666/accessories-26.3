@@ -13,6 +13,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 
 public class AccessoriesDataGenEntrypoint implements DataGeneratorEntrypoint {
 
@@ -67,7 +68,7 @@ public class AccessoriesDataGenEntrypoint implements DataGeneratorEntrypoint {
                             Identifier.fromNamespaceAndPath(modid, "test_binding"),
                             this.builder()
                                     .slots("test")
-                                    .entityType(EntityType.PLAYER)
+                                    .entityType(EntityTypes.PLAYER)
                                     .create()
                     );
                 }

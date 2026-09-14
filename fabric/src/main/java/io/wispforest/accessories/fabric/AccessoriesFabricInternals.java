@@ -12,11 +12,10 @@ import io.wispforest.accessories.menu.AccessoriesMenuVariant;
 import io.wispforest.accessories.menu.variants.AccessoriesMenuBase;
 import io.wispforest.endec.Endec;
 import io.wispforest.owo.serialization.CodecUtils;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
+import net.fabricmc.fabric.api.menu.v1.FabricMenuProvider;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
@@ -109,11 +108,15 @@ public class AccessoriesFabricInternals extends AccessoriesInternals {
     }
 
     public <T extends AbstractContainerMenu, D> MenuType<T> registerMenuType(Identifier location, Endec<D> endec, TriFunction<Integer, Inventory, D, T> func){
-        return Registry.register(BuiltInRegistries.MENU, location, new ExtendedScreenHandlerType<>(func::apply, CodecUtils.toPacketCodec(endec)));
+        return Registry.register(BuiltInRegistries.MENU, location, new ExtendedMenuType<>(func::apply, CodecUtils.toPacketCodec(endec)));
     }
 
     public void openAccessoriesMenu(Player player, AccessoriesMenuVariant variant, @Nullable LivingEntity targetEntity, @Nullable ItemStack carriedStack) {
-        player.openMenu(new ExtendedScreenHandlerFactory<AccessoriesMenuData>() {
+        player.openMenu(new ExtendedMenuProviderImpl(variant, targetEntity, carriedStack));
+    }
+
+    // FabricMenuProvider is a separate interface now, so the anonymous class became a named one
+    private record ExtendedMenuProviderImpl(AccessoriesMenuVariant variant, @Nullable LivingEntity targetEntity, @Nullable ItemStack carriedStack) implements ExtendedMenuProvider<AccessoriesMenuData>, FabricMenuProvider {
             @Override
             public AccessoriesMenuData getScreenOpeningData(ServerPlayer player) {
                 return AccessoriesMenuData.of(targetEntity, ((AccessoriesMenuBase) player.containerMenu));
@@ -132,7 +135,6 @@ public class AccessoriesFabricInternals extends AccessoriesInternals {
             public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
                 return AccessoriesMenuVariant.openMenu(i, inventory, variant, targetEntity, carriedStack);
             }
-        });
     }
 
     public void addAttributeTooltips(@Nullable Player player, ItemStack stack, Multimap<Holder<Attribute>, AttributeModifier> multimap, Consumer<Component> tooltipAddCallback, TooltipDisplay display, Item.TooltipContext context, TooltipFlag flag) {
@@ -148,14 +150,14 @@ public class AccessoriesFabricInternals extends AccessoriesInternals {
 
         var id = dataLoader.getId();
 
-        loader.registerReloader(id, dataLoader);
+        loader.registerReloadListener(id, dataLoader);
 
         for (var dependencyId : dataLoader.getDependencyIds()) {
-            loader.addReloaderOrdering(dependencyId, id);
+            loader.addListenerOrdering(dependencyId, id);
         }
 
         if (dataLoader instanceof EndecDataLoader<?> endecDataLoader) {
-            endecDataLoader.setRegistriesAccess(sharedState -> sharedState.get(ResourceLoader.RELOADER_REGISTRY_LOOKUP_KEY));
+            endecDataLoader.setRegistriesAccess(sharedState -> sharedState.get(ResourceLoader.REGISTRY_LOOKUP_KEY));
         }
     }
 

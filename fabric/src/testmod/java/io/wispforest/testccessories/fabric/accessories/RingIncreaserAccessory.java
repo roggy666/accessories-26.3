@@ -10,6 +10,7 @@ import io.wispforest.testccessories.fabric.Testccessories;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -49,6 +50,6 @@ public class RingIncreaserAccessory implements Accessory {
 
     @Override
     public void canEquip(ItemStack stack, SlotReference reference, ActionResponseBuffer buffer) {
-        buffer.respondWith(new HolderSetValidationResponse<>(List.of(EntityType.PLAYER.builtInRegistryHolder()), reference.entity().getType().builtInRegistryHolder()));
+        buffer.respondWith(new HolderSetValidationResponse<>(List.of(EntityTypes.PLAYER.builtInRegistryHolder()), reference.entity().getType().builtInRegistryHolder()));
     }
 }

@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.BlockItem;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,18 +39,18 @@ public class UniqueSlotTest implements UniqueSlotHandling.RegistrationCallback {
     public void registerSlots(UniqueSlotHandling.UniqueSlotBuilderFactory factory) {
         testSlot1Getter = factory.create(Testccessories.of("test_slot_1"), 1)
                 .slotPredicates(slotPredicate1)
-                .validTypes(EntityType.PLAYER)
+                .validTypes(EntityTypes.PLAYER)
                 .build();
 
         testSlot2Getter = factory.create(Testccessories.of("test_slot_2"), 1)
                 .slotPredicates(slotPredicate2)
-                .validTypes(EntityType.PLAYER)
+                .validTypes(EntityTypes.PLAYER)
                 .build();
 
         testSlot3Getter = factory.create(Testccessories.of("test_slot_3"), 0)
                 .allowResizing(true)
                 .slotPredicates(slotPredicate3)
-                .validTypes(EntityType.PLAYER)
+                .validTypes(EntityTypes.PLAYER)
                 .build();
     }
 

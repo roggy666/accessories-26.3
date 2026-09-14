@@ -11,8 +11,7 @@
     "DataPackContentsMixin",
     "LivingEntityMixin",
     "PlayerListMixin",
-    "ServerEntityEvent",
-    "trinkets.LivingEntityTrinketComponentMixin"
+    "ServerEntityEvent"
   ],
   "injectors": {
     "defaultRequire": 1
