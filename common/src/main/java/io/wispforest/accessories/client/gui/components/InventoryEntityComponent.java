@@ -9,6 +9,7 @@ import io.wispforest.owo.ui.renderstate.EntityElementRenderState;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityAttachment;
@@ -223,6 +224,13 @@ public class InventoryEntityComponent<E extends Entity> extends EntityComponent<
             entityState.y = 0;
             entityState.z = 0;
 
+            // Rotations are read from the entity during extraction, so like vanilla's inventory entity we override them on the state
+            if (entityState instanceof LivingEntityRenderState livingState) {
+                livingState.bodyRot = 0;
+                livingState.yRot = this.pendingHeadYaw;
+                livingState.xRot = this.pendingHeadPitch;
+            }
+
             if (showNametag) {
                 // TODO: FIX LATER WITH OWO UPSTREAM
                 entityState.nameTag = entity.getDisplayName();
@@ -277,6 +285,9 @@ public class InventoryEntityComponent<E extends Entity> extends EntityComponent<
         return additionalOffset * (isLeftSide ? -2.3f : 2.3f);
     }
 
+    private float pendingHeadYaw = 0;
+    private float pendingHeadPitch = 0;
+
     private void rotateMatrixStack(Matrix4f matrix, LivingEntity living, int mouseX, int mouseY, boolean isLeftSide) {
         var trueWidth = this.width / (sideBySideMode ? 2f : 1f);
 
@@ -289,6 +300,9 @@ public class InventoryEntityComponent<E extends Entity> extends EntityComponent<
 
             living.yHeadRotO = -yRotation;
 
+            this.pendingHeadYaw = -yRotation;
+            this.pendingHeadPitch = xRotation * .65f;
+
             this.entity.yRotO = -yRotation;
             this.entity.xRotO = xRotation * .65f;
 
@@ -300,6 +314,9 @@ public class InventoryEntityComponent<E extends Entity> extends EntityComponent<
             matrix.rotate(Axis.XP.rotationDegrees(xRotation * .35f));
             matrix.rotate(Axis.YP.rotationDegrees(yRotation * .555f + rotationOffset));
         } else {
+            this.pendingHeadYaw = 0;
+            this.pendingHeadPitch = xRotation * .35f;
+
             this.entity.xRotO = xRotation * .35f;
 
             this.entity.setXRot(this.entity.xRotO);

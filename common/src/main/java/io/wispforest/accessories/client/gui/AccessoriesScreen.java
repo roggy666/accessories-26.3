@@ -1600,7 +1600,7 @@ public class AccessoriesScreen extends BaseOwoContainerScreen<FlowLayout, Access
     }
 
     public <T> T setDataFrom(PlayerOption<T> option, UnaryOperator<T> operator) {
-        var value = operator.apply(getData(option).orElseThrow());
+        var value = operator.apply(getDefaultedData(option));
         setData(option, value);
         return value;
     }
