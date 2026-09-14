@@ -302,21 +302,31 @@ public class AccessoriesClient {
         ClientLifecycleEvents.END_DATA_PACK_RELOAD.register((client, success) -> {
             if (!success) return; // LOADING PROBLEM HAS OCCURRED SO THINGS WILL GO WRONG IF WE TRY DOING OUR STUFF
 
-            BuiltInRegistries.ITEM.forEach(item -> {
-                var defaultStack = item.getDefaultInstance();
-
-                if (item instanceof BannerItem || defaultStack.has(DataComponents.GLIDER)) {
-                    if (!AccessoriesRendererRegistry.hasRenderer(item)) {
-                        // TODO: Replace with better method of targeting only specific slots to disable default rendering
-                        AccessoriesRendererRegistry.bindItemToEmptyRenderer(item);
-                    }
-                }
-            });
+            bindDefaultEmptyRenderers();
 
             AccessoriesRendererRegistry.onReload();
         });
 
         initLayer();
+    }
+
+    /**
+     * Item components are data driven and only bound once registry data arrives (server data pack load / client registry sync),
+     * so this runs both on resource reload and once components are known to be bound
+     */
+    public static void bindDefaultEmptyRenderers() {
+        BuiltInRegistries.ITEM.forEach(item -> {
+            var holder = item.builtInRegistryHolder();
+
+            var isGlider = holder.areComponentsBound() && holder.components().has(DataComponents.GLIDER);
+
+            if (item instanceof BannerItem || isGlider) {
+                if (!AccessoriesRendererRegistry.hasRenderer(item)) {
+                    // TODO: Replace with better method of targeting only specific slots to disable default rendering
+                    AccessoriesRendererRegistry.bindItemToEmptyRenderer(item);
+                }
+            }
+        });
     }
 
     public static boolean isInventoryKey(Predicate<KeyMapping> predicate) {

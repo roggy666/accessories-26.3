@@ -2,7 +2,6 @@
   "required": true,
   "package": "io.wispforest.accessories.mixin",
   "plugin": "io.wispforest.accessories.mixin.AccessoriesMixinPlugin",
-  "test_refmap": "${mod_id}-common-common-refmap.json",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [

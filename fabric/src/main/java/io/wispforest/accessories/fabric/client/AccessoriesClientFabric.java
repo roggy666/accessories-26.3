@@ -14,6 +14,7 @@ import io.wispforest.accessories.menu.AccessoriesMenuTypes;
 import io.wispforest.accessories.networking.AccessoriesNetworking;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -74,6 +75,11 @@ public class AccessoriesClientFabric implements ClientModInitializer {
         KeyMappingHelper.registerKeyMapping(AccessoriesClient.OPEN_SCREEN);
 
         ClientTickEvents.START_CLIENT_TICK.register(AccessoriesClient::handleKeyMappings);
+
+        // Components are bound by the registry sync, which is also when tags arrive on the client
+        CommonLifecycleEvents.TAGS_LOADED.register((registries, client) -> {
+            if (client) AccessoriesClient.bindDefaultEmptyRenderers();
+        });
 
         LivingEntityRenderLayerRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
             if(!(entityRenderer.getModel() instanceof HumanoidModel)) return;

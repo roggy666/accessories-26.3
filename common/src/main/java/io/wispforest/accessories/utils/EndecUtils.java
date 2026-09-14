@@ -97,7 +97,7 @@ public class EndecUtils {
 
                             if (stateHolder.getProperties().isEmpty()) return MapCodec.unit(stateHolder);
 
-                            return (((StateHolderAccessor<Block, BlockState>) stateHolder).accessories$propertiesCodec())
+                            return block.getStateDefinition().propertiesCodec()
                                     .codec()
                                     .lenientOptionalFieldOf("properties")
                                     .xmap(optional -> optional.orElse(stateHolder), Optional::of);

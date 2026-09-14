@@ -20,14 +20,14 @@ public abstract class AbstractContainerScreenMixin implements ContainerScreenExt
 
     @Shadow @Nullable protected Slot hoveredSlot;
 
-    @WrapOperation(method = "renderContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;renderSlotHighlightFront(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V"))
+    @WrapOperation(method = "extractContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;extractSlotHighlightFront(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V"))
     private void accessories$isHoveringOverrideFront(AbstractContainerScreen instance, GuiGraphicsExtractor guiGraphics, Operation<Void> original, @Local(argsOnly = true, ordinal = 0) int mouseX, @Local(argsOnly = true, ordinal = 1) int mouseY){
         var override = this.isHovering_Rendering(this.hoveredSlot, mouseX, mouseY);
 
         if (override == null || override) original.call(instance, guiGraphics);
     }
 
-    @WrapOperation(method = "renderContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;renderSlotHighlightBack(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V"))
+    @WrapOperation(method = "extractContents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;extractSlotHighlightBack(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V"))
     private void accessories$isHoveringOverrideBack(AbstractContainerScreen instance, GuiGraphicsExtractor guiGraphics, Operation<Void> original, @Local(argsOnly = true, ordinal = 0) int mouseX, @Local(argsOnly = true, ordinal = 1) int mouseY){
         var override = this.isHovering_Rendering(this.hoveredSlot, mouseX, mouseY);
 

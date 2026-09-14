@@ -168,7 +168,7 @@ public abstract class EnchantmentHelperMixin {
         return record;
     }
 
-    @WrapOperation(method = "method_60148", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/Enchantment;matchingSlot(Lnet/minecraft/world/entity/EquipmentSlot;)Z"))
+    @WrapOperation(method = "lambda$forEachModifier$3", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/Enchantment;matchingSlot(Lnet/minecraft/world/entity/EquipmentSlot;)Z"))
     private static boolean allowAccessoriesSlotEnchentments(Enchantment instance, EquipmentSlot slot, Operation<Boolean> original) {
         if (slot.equals(AccessoriesInternals.INSTANCE.getInternalEquipmentSlot())) {
             var valid = enchantmentValidForRedirect(null, instance);

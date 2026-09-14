@@ -15,7 +15,7 @@ public class DataPackContentsMixin {
 //    }
 //
 //    @Inject(
-//            method = "updateStaticRegistryTags",
+//            method = "updateComponentsAndStaticRegistryTags",
 //            at = @At("TAIL")
 //    )
 //    private void removeLoadedTags(CallbackInfo ci) {

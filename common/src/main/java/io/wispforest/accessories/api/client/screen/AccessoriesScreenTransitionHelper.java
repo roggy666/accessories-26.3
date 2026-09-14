@@ -193,7 +193,7 @@ public class AccessoriesScreenTransitionHelper {
         registerScreenTransitionWithCustomInvReopener(
                 Identifier.withDefaultNamespace("horse_inventory"),
                 HorseInventoryScreen.class,
-                (HorseInventoryScreen screen) -> ((HorseInventoryMenuAccessor) screen.getMenu()).accessories$horse()
+                (HorseInventoryScreen screen) -> ((HorseInventoryMenuAccessor) screen.getMenu()).accessories$mount()
         );
 
         registerTargetGetter(player -> {

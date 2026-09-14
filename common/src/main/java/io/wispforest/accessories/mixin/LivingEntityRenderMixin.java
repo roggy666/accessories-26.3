@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRenderMixin {
     @WrapOperation(
-        method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
+        method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/RenderLayer;submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/EntityRenderState;FF)V")
     )
     private <S extends EntityRenderState> void accessories$passCameraRenderState(RenderLayer instance, PoseStack poseStack, SubmitNodeCollector collector, int i, S s, float f, float g, Operation<Void> original, @Local(argsOnly = true) CameraRenderState cameraState) {
