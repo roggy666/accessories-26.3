@@ -230,10 +230,8 @@ public class AccessoriesRendererRegistry {
     @Deprecated(forRemoval = true)
     public static void registerArmorRendering(Item item) {
         if (!AccessoriesRendererRegistry.hasRenderer(item)) {
-            var rendererId = getRendererId(item);
-
-            AccessoriesRendererRegistry.registerRenderer(rendererId, () -> BuiltinAccessoryRenderers.ARMOR_RENDERER);
-            AccessoriesRendererRegistry.bindItemToRenderer(item, rendererId);
+            // The built-in renderer has one identity; items share its binding, not duplicate registrations.
+            AccessoriesRendererRegistry.bindItemToArmorRenderer(item);
         }
     }
 }

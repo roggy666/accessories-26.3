@@ -23,7 +23,7 @@ import java.util.Map;
 public class ExtraEventHandler {
 
     public static int lootingAdjustments(LivingEntity entity, LootContext context, int currentLevel){
-        var damageSource = context.getOptionalParameter(LootContextParams.DAMAGE_SOURCE);
+        var damageSource = context.getOptional(LootContextParams.DAMAGE_SOURCE);
 
         if(damageSource != null && damageSource.getEntity() instanceof LivingEntity targetEntity){
             var capability = AccessoriesCapability.get(entity);
@@ -50,7 +50,7 @@ public class ExtraEventHandler {
     }
 
     public static int fortuneAdjustment(LootContext context, int currentLevel){
-        if(context.getOptionalParameter(LootContextParams.THIS_ENTITY) instanceof LivingEntity livingEntity) {
+        if(context.getOptional(LootContextParams.THIS_ENTITY) instanceof LivingEntity livingEntity) {
             var capability = AccessoriesCapability.get(livingEntity);
 
             if (capability != null) {

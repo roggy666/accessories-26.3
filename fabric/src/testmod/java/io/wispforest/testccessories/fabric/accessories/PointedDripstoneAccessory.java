@@ -66,7 +66,7 @@ public class PointedDripstoneAccessory implements Accessory {
         @Override
         public <S extends LivingEntityRenderState> void renderStack(AccessoryRenderState accessoryState, S entityState, EntityModel<S> model, PoseStack matrices, SubmitNodeCollector collector, ItemStack stack, ItemStackRenderState stackRenderState, int light) {
             for (int i = 0; i < stack.getCount(); i++) {
-                if (i > 0) matrices.mulPose(Axis.YP.rotationDegrees(Math.min(90, 360f / stack.getCount())));
+                if (i > 0) matrices.rotate(Axis.YP.rotationDegrees(Math.min(90, 360f / stack.getCount())));
                 matrices.pushPose();
                 matrices.translate(Math.max(0,stack.getCount() - 8) * 0.01, 0, 0);
                 stackRenderState.submit(matrices, collector, light, OverlayTexture.NO_OVERLAY, 0);

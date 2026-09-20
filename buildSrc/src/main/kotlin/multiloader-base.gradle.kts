@@ -85,6 +85,8 @@ repositories {
     //maven("https://maven.neoforged.net/releases/")
 
     // oωo (owo-lib) and Endec Lib
+    // owo-lib for 26.3 is built locally from ../owo-lib-26.3 (publishToMavenLocal); no upstream release yet
+    mavenLocal()
     maven("https://maven.wispforest.io/releases")
     maven("https://jitpack.io")
 

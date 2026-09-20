@@ -4,7 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.wispforest.accessories.api.slot.SlotPath;
 import io.wispforest.accessories.data.SlotGroupLoader;
-import net.minecraft.advancements.predicates.ContextAwarePredicate;
+import net.minecraft.core.Holder;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
@@ -33,7 +34,7 @@ public class AccessoryChangedCriterion extends SimpleCriterionTrigger<AccessoryC
     }
 
     public record Conditions(
-            Optional<ContextAwarePredicate> player,
+            Optional<Holder<LootItemCondition>> player,
             Optional<List<ItemPredicate>> itemPredicates,
             Optional<List<String>> groups,
             Optional<List<String>> slots,
@@ -41,7 +42,7 @@ public class AccessoryChangedCriterion extends SimpleCriterionTrigger<AccessoryC
             Optional<Boolean> cosmetic
     ) implements SimpleInstance {
         public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
+                LootItemCondition.CODEC.optionalFieldOf("player").forGetter(Conditions::player),
                 ItemPredicate.CODEC.listOf().optionalFieldOf("items").forGetter(Conditions::itemPredicates),
                 Codec.STRING.listOf().optionalFieldOf("groups").forGetter(Conditions::groups),
                 Codec.STRING.listOf().optionalFieldOf("slots").forGetter(Conditions::slots),

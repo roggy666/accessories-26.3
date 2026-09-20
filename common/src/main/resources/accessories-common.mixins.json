@@ -59,7 +59,6 @@
     "EntityTrackerAccessor",
     "EquipmentSlotMixin",
     "EquipmentSlotTypeMixin",
-    "FileToIdConverterMixin",
     "HorseInventoryMenuAccessor",
     "InventoryMixin",
     "ItemStackAccessor",

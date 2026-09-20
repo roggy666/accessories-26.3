@@ -146,7 +146,7 @@ public class BuiltinAccessoryRenderers {
         public List<ItemStack> getInnerStacks(ItemStack holderStack) {
             var contents = holderStack.get(DataComponents.BUNDLE_CONTENTS);
 
-            return contents.itemCopyStream().toList();
+            return contents.itemCopies().toList();
         }
     }
 

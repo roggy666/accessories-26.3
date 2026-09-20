@@ -1,7 +1,7 @@
 package io.wispforest.accessories.mixin.sodium;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import io.wispforest.accessories.client.MPOATVConstructingVertexConsumer;
 import net.caffeinemc.mods.sodium.api.vertex.attributes.common.PositionAttribute;

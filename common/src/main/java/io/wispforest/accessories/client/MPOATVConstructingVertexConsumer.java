@@ -56,5 +56,6 @@ public final class MPOATVConstructingVertexConsumer implements VertexConsumer {
     @Override public VertexConsumer setUv(float f, float g) { return this; }
     @Override public VertexConsumer setUv1(int i, int j) { return this; }
     @Override public VertexConsumer setUv2(int i, int j) { return this; }
+    @Override public VertexConsumer setUv3(float f, float g) { return this; }
     @Override public VertexConsumer setNormal(float f, float g, float h) { return this; }
 }

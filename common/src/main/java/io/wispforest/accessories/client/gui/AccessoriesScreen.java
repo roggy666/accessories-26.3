@@ -1,5 +1,6 @@
 package io.wispforest.accessories.client.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.wispforest.accessories.Accessories;
 import io.wispforest.accessories.api.action.ActionResponseBuffer;
 import io.wispforest.accessories.api.action.ValidationState;
@@ -64,7 +65,6 @@ import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-import org.lwjgl.glfw.GLFW;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -277,7 +277,7 @@ public class AccessoriesScreen extends BaseOwoContainerScreen<FlowLayout, Access
             return true;
         }
 
-        if (input.key() == GLFW.GLFW_KEY_ESCAPE && this.getDefaultedData(PlayerOptions.ADVANCED_SETTINGS)) {
+        if (input.key() == InputConstants.KEY_ESCAPE && this.getDefaultedData(PlayerOptions.ADVANCED_SETTINGS)) {
             toggleAdvancedOptions(this.component(ButtonComponent.class, "advanced_options_btn"));
 
             return false;

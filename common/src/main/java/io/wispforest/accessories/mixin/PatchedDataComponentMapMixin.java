@@ -90,25 +90,25 @@ public abstract class PatchedDataComponentMapMixin implements PatchedDataCompone
 
         this.inApplyPatchLock = false;
 
-        var changedDataTypes = (List<DataComponentType<?>>) (List) patch.entrySet().stream().map(Map.Entry::getKey).toList();
+        var changedDataTypes = accessories$changedTypes(patch);
 
         this.accessories$handleMutationEvent(changedDataTypes);
     }
 
-    @Inject(method = "applyPatch(Lnet/minecraft/core/component/DataComponentType;Ljava/util/Optional;)V", at = @At("HEAD"))
-    private void accessories$updateChangeValue_applyPatch(DataComponentType<?> component, Optional<?> value, CallbackInfo ci){
-        this.changeCheckStack = true;
-
-        if (!this.inApplyPatchLock) {
-            this.accessories$handleMutationEvent(List.of(component));
-        }
+    @Unique
+    private static List<DataComponentType<?>> accessories$changedTypes(DataComponentPatch patch) {
+        var split = patch.split();
+        var types = new java.util.ArrayList<DataComponentType<?>>();
+        split.added().keySet().forEach(types::add);
+        types.addAll(split.removed());
+        return types;
     }
 
     @Inject(method = "restorePatch", at = @At("HEAD"))
     private void accessories$updateChangeValue_restorePatch(DataComponentPatch patch, CallbackInfo ci){
         this.changeCheckStack = true;
 
-        var changedDataTypes = (List<DataComponentType<?>>) (List) patch.entrySet().stream().map(Map.Entry::getKey).toList();
+        var changedDataTypes = accessories$changedTypes(patch);
 
         this.accessories$handleMutationEvent(changedDataTypes);
     }

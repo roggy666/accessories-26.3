@@ -197,7 +197,7 @@ public class DefaultAccessoryRenderer implements AccessoryRenderer {
                                 0
                         );
                         matrices.scale(0.5f, 0.5f, 0.5f);
-                        matrices.mulPose(Axis.YP.rotationDegrees(90));
+                        matrices.rotate(Axis.YP.rotationDegrees(90));
                         for (int i = 0; i < stack.getCount(); i++) {
                             renderCall.accept(matrices);
                             matrices.translate(
@@ -214,7 +214,7 @@ public class DefaultAccessoryRenderer implements AccessoryRenderer {
                         var modelTarget = path.index() % 2 == 0 ? "right_arm" : "left_arm";
                         ModelTransformOps.transformToModelPart(matrices, renderState, humanoidModel, modelTarget, 0, -0.5, 0);
                         matrices.scale(1.01f, 1.01f, 1.01f);
-                        matrices.mulPose(Axis.YP.rotationDegrees(90));
+                        matrices.rotate(Axis.YP.rotationDegrees(90));
                         renderCall.accept(matrices);
                     }
                 }),
@@ -225,7 +225,7 @@ public class DefaultAccessoryRenderer implements AccessoryRenderer {
                         ModelTransformOps.transformToFace(matrices, renderState, humanoidModel, modelTarget, Side.BOTTOM);
                         matrices.translate(0, 0.25, 0);
                         matrices.scale(1.02f, 1.02f, 1.02f);
-                        matrices.mulPose(Axis.YP.rotationDegrees(90));
+                        matrices.rotate(Axis.YP.rotationDegrees(90));
                         renderCall.accept(matrices);
                     }
                 }),

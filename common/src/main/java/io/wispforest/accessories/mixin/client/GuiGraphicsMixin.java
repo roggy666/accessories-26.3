@@ -42,7 +42,8 @@ public abstract class GuiGraphicsMixin implements ScissorStackManipulation, Defe
         ((ScissorStackManipulation) this.accessories$scissorStack()).accessories$renderWithoutEntries(runnable, levels);
     }
 
-    @WrapMethod(method = "setTooltipForNextFrameInternal")
+    // 26.3 has two overloads: the public entry points call the 7-arg one, which delegates to the 8-arg one that stores the tooltip
+    @WrapMethod(method = "setTooltipForNextFrameInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Z)V")
     private void accessories$adjustPositioner(Font font, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier background, boolean focused, Operation<Void> original) {
         // TODO: MAYBE GOOD IDEA TO CHECK AGAINST REFERENCE OF THE SINGULAR USED INSTANCE
         if (positioner instanceof DefaultTooltipPositioner defaultTooltipPositioner) {
@@ -56,7 +57,7 @@ public abstract class GuiGraphicsMixin implements ScissorStackManipulation, Defe
         original.call(font, components, x, y, positioner, background, focused);
     }
 
-    @WrapOperation(method = "setTooltipForNextFrameInternal", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;deferredTooltip:Ljava/lang/Runnable;", opcode = Opcodes.PUTFIELD))
+    @WrapOperation(method = "setTooltipForNextFrameInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;ZZ)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;deferredTooltip:Ljava/lang/Runnable;", opcode = Opcodes.PUTFIELD))
     private void accessories$wrapTooltipRenderCall(GuiGraphicsExtractor instance, Runnable value, Operation<Void> original,
                       @Local(argsOnly = true) Font font,
                       @Local(argsOnly = true) List<ClientTooltipComponent> components,
@@ -64,7 +65,7 @@ public abstract class GuiGraphicsMixin implements ScissorStackManipulation, Defe
                       @Local(argsOnly = true, ordinal = 1) int y,
                       @Local(argsOnly = true) ClientTooltipPositioner positioner,
                       @Local(argsOnly = true) @Nullable Identifier background,
-                      @Local(argsOnly = true) boolean focused) {
+                      @Local(argsOnly = true, ordinal = 0) boolean focused) {
         original.call(instance, new DeferredTooltip(font, components, x, y, positioner, background, focused, value));
     }
 

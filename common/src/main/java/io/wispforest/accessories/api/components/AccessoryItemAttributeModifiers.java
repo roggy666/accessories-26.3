@@ -170,7 +170,6 @@ public record AccessoryItemAttributeModifiers(List<AccessoryItemAttributeModifie
                     return context.requireAttributeValue(RegistriesAttribute.REGISTRIES)
                             .infoGetter().lookup(Registries.ATTRIBUTE)
                             .orElseThrow(IllegalStateException::new)
-                            .getter()
                             .get(ResourceKey.create(Registries.ATTRIBUTE, attributeType))
                             .orElseThrow(IllegalStateException::new);
                 },

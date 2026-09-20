@@ -1,14 +1,9 @@
 package io.wispforest.accessories.mixin;
 
-import com.google.gson.JsonElement;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DynamicOps;
-import io.wispforest.accessories.Accessories;
-import io.wispforest.accessories.pond.ContextedFileToIdConverter;
-import io.wispforest.accessories.pond.ReplaceableJsonResourceReloadListener;
 import io.wispforest.accessories.utils.JsonUtils;
+import io.wispforest.accessories.pond.ReplaceableJsonResourceReloadListener;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
@@ -35,23 +30,14 @@ public abstract class SimpleJsonResourceReloadListenerMixin implements Replaceab
         return this.allowReplacementLoading;
     }
 
-    @WrapOperation(method = "prepare(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)Ljava/util/Map;", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/SimpleJsonResourceReloadListener;scanDirectory(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/FileToIdConverter;Lcom/mojang/serialization/DynamicOps;Lcom/mojang/serialization/Codec;Ljava/util/Map;)V"))
-    private <T> void checkIfReplaceScan(ResourceManager resourceManager, FileToIdConverter converter, DynamicOps<JsonElement> ops, Codec<T> codec, Map<Identifier, T> output, Operation<Void> original) {
-        // TODO: REPLACE WITH INJECTION INTO ORIGINAL SCAN??
-
+    // Since 26.3 the directory scan is inlined into prepare(), so the listener instance
+    // (and therefore the replacement flag) is available right where the resources are listed
+    @WrapOperation(
+        method = "prepare(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)Ljava/util/Map;",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/resources/FileToIdConverter;listMatchingResources(Lnet/minecraft/server/packs/resources/ResourceManager;)Ljava/util/Map;")
+    )
+    private Map<Identifier, Resource> listReplacedResources(FileToIdConverter instance, ResourceManager resourceManager, Operation<Map<Identifier, Resource>> original) {
         if (this.allowReplacementLoading) {
-            // FileToIdConverter is a final record now, the interface only exists at runtime through the mixin
-            converter = ((ContextedFileToIdConverter) (Object) converter)
-                    .setData(Accessories.of("allow_replacement_loading"), true);
-        }
-
-        original.call(resourceManager, converter, ops, codec, output);
-    }
-
-    @WrapOperation(method = "scanDirectory(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/FileToIdConverter;Lcom/mojang/serialization/DynamicOps;Lcom/mojang/serialization/Codec;Ljava/util/Map;)V",
-    at = @At(value = "INVOKE", target = "Lnet/minecraft/resources/FileToIdConverter;listMatchingResources(Lnet/minecraft/server/packs/resources/ResourceManager;)Ljava/util/Map;"))
-    private static Map<Identifier, Resource> listReplacedResources(FileToIdConverter instance, ResourceManager resourceManager, Operation<Map<Identifier, Resource>> original) {
-        if ((Object) instance instanceof ContextedFileToIdConverter ctx && ctx.<Boolean>getDataOrDefault(Accessories.of("allow_replacement_loading"), false)) {
             return JsonUtils.scanDirectoryWithReplace(resourceManager, instance);
         }
 

@@ -1,5 +1,6 @@
 package io.wispforest.accessories.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import io.wispforest.accessories.Accessories;
 import io.wispforest.accessories.AccessoriesClientInternals;
@@ -64,7 +65,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.phys.EntityHitResult;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.Objects;
@@ -78,8 +78,8 @@ public class AccessoriesClient {
 
     public static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(Accessories.of("main"));
 
-    public static final KeyMapping OPEN_SCREEN = new KeyMapping(MODID + ".key.open_accessories_screen", GLFW.GLFW_KEY_H, KEY_CATEGORY);
-    public static final KeyMapping OPEN_OTHERS_SCREEN = new KeyMapping(MODID + ".key.open_others_accessories_screen", GLFW.GLFW_KEY_H, KEY_CATEGORY);
+    public static final KeyMapping OPEN_SCREEN = new KeyMapping(MODID + ".key.open_accessories_screen", InputConstants.KEY_H, KEY_CATEGORY);
+    public static final KeyMapping OPEN_OTHERS_SCREEN = new KeyMapping(MODID + ".key.open_others_accessories_screen", InputConstants.KEY_H, KEY_CATEGORY);
 
     //public static final ShaderProgram BLIT_SHADER_KEY = new ShaderProgram(Accessories.of("core/fish"), DefaultVertexFormat.BLIT_SCREEN, ShaderDefines.EMPTY);
 
@@ -266,7 +266,7 @@ public class AccessoriesClient {
     }
 
     private static final boolean IS_OSX = Util.getPlatform() == Util.OS.OSX;
-    private static final int EDIT_SHORTCUT_KEY_MODIFIER = IS_OSX ? GLFW.GLFW_MOD_SUPER : GLFW.GLFW_MOD_CONTROL;
+    private static final int EDIT_SHORTCUT_KEY_MODIFIER = IS_OSX ? InputConstants.MOD_SUPER : InputConstants.MOD_CONTROL;
 
     public static void init(){
         AccessoriesClientInternals.setInstance(new AccessoriesClientInternals() {
@@ -293,9 +293,9 @@ public class AccessoriesClient {
 
             @Override
             public int createBitFlag(boolean hasShift, boolean hasControl, boolean hasAlt) {
-                return (hasShift ? GLFW.GLFW_MOD_SHIFT : 0)
+                return (hasShift ? InputConstants.MOD_SHIFT : 0)
                     | (hasControl ? EDIT_SHORTCUT_KEY_MODIFIER : 0)
-                    | (hasAlt ? GLFW.GLFW_MOD_ALT : 0);
+                    | (hasAlt ? InputConstants.MOD_ALT : 0);
             }
         });
 

@@ -1,5 +1,6 @@
 package io.wispforest.accessories.client.gui.components;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.math.Axis;
 import io.wispforest.owo.ui.component.EntityComponent;
 import io.wispforest.owo.ui.core.UIComponent;
@@ -18,7 +19,6 @@ import net.minecraft.world.entity.LivingEntity;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -340,15 +340,15 @@ public class InventoryEntityComponent<E extends Entity> extends EntityComponent<
     public boolean onKeyPress(KeyEvent input) {
         var keycode = input.key();
 
-        if(keycode == GLFW.GLFW_KEY_LEFT) {
+        if(keycode == InputConstants.KEY_LEFT) {
             this.xOffset -= 0.05f;
-        } else if(keycode == GLFW.GLFW_KEY_RIGHT) {
+        } else if(keycode == InputConstants.KEY_RIGHT) {
             this.xOffset += 0.05f;
         }
 
-        if(keycode == GLFW.GLFW_KEY_UP) {
+        if(keycode == InputConstants.KEY_UP) {
             this.yOffset += 0.05f;
-        } else if(keycode == GLFW.GLFW_KEY_DOWN) {
+        } else if(keycode == InputConstants.KEY_DOWN) {
             this.yOffset -= 0.05f;
         }
 

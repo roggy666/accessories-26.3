@@ -14,7 +14,8 @@ import java.util.List;
 @Mixin(value = OwoReiPlugin.class, remap = false)
 public abstract class OwoReiPluginMixin {
 
-    @Inject(method = "lambda$registerExclusionZones$2", at = @At("HEAD"), remap = false, cancellable = true)
+    // owo-lib 0.13.1+26.3 numbers the BaseOwoContainerScreen exclusion lambda as $1
+    @Inject(method = "lambda$registerExclusionZones$1", at = @At("HEAD"), remap = false, cancellable = true)
     private static void accessories$preventZonesForAccessoriesScreen(BaseOwoContainerScreen screen, CallbackInfoReturnable<Collection> cir) {
         if(screen instanceof AccessoriesScreen) cir.setReturnValue(List.of());
     }

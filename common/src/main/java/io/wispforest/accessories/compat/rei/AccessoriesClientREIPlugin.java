@@ -1,5 +1,6 @@
 package io.wispforest.accessories.compat.rei;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.wispforest.accessories.client.gui.AccessoriesScreen;
 import io.wispforest.accessories.client.gui.components.ArrowComponent;
 import io.wispforest.accessories.impl.option.PlayerOptions;
@@ -17,7 +18,6 @@ import me.shedaniel.rei.plugin.autocrafting.InventoryCraftingTransferHandler;
 import me.shedaniel.rei.plugin.common.BuiltinPlugin;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -66,7 +66,7 @@ public class AccessoriesClientREIPlugin implements REIClientPlugin {
                     if (!screen.getDefaultedData(PlayerOptions.SHOW_CRAFTING_GRID) && context.isActuallyCrafting()) {
                         var component = screen.component(ButtonComponent.class, "crafting_grid_btn");
 
-                        component.onPress(new MouseButtonEvent(0,0, new MouseButtonInfo(GLFW.GLFW_MOUSE_BUTTON_1,0)));
+                        component.onPress(new MouseButtonEvent(0,0, new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT,0)));
                     }
 
                     return ApplicabilityResult.createApplicable();

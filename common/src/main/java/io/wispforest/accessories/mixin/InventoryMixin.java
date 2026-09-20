@@ -1,5 +1,6 @@
 package io.wispforest.accessories.mixin;
 
+import net.minecraft.util.Prediction;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
@@ -31,19 +32,25 @@ public abstract class InventoryMixin {
     @Accessor("player")
     public abstract Player accessories$player();
 
-    @Inject(method = "clearOrCountMatchingItems", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z", shift = At.Shift.AFTER))
-    private void clearAccessories(Predicate<ItemStack> stackPredicate, int maxCount, Container inventory, CallbackInfoReturnable<Integer> cir, @Local(ordinal = 1) LocalIntRef i) {
+    // 26.3 passes an explicit countingOnly flag and only evaluates the carried stack when clearing,
+    // so the accessory containers are folded into the result instead of a local counter
+    @ModifyReturnValue(method = "clearOrCountMatchingItems", at = @At("RETURN"))
+    private int clearAccessories(int count, Predicate<ItemStack> stackPredicate, boolean countingOnly, int maxCount, Container inventory) {
         var capability = AccessoriesCapability.get(accessories$player());
 
-        if(capability == null) return;
+        if(capability == null) return count;
+
+        var total = new int[]{count};
 
         capability.getContainers().forEach((s, container) -> {
             var accessories = container.getAccessories();
-            i.set(i.get() + ContainerHelper.clearOrCountMatchingItems(accessories, stackPredicate, maxCount - i.get(), maxCount - i.get() == 0));
+            total[0] += ContainerHelper.clearOrCountMatchingItems(accessories, stackPredicate, maxCount - total[0], countingOnly);
 
             var cosmetics = container.getCosmeticAccessories();
-            i.set(i.get() + ContainerHelper.clearOrCountMatchingItems(cosmetics, stackPredicate, maxCount - i.get(), maxCount - i.get() == 0));
+            total[0] += ContainerHelper.clearOrCountMatchingItems(cosmetics, stackPredicate, maxCount - total[0], countingOnly);
         });
+
+        return total[0];
     }
 
     @ModifyReturnValue(method = "contains(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("TAIL"))
@@ -76,7 +83,7 @@ public abstract class InventoryMixin {
         var ext = ((DroppedStacksExtension) player);
 
         for (var itemstack : ext.toBeDroppedStacks()) {
-            player.drop(itemstack, true, false);
+            player.drop(itemstack, true, Prediction.SERVER_ONLY);
         }
 
         ext.addToBeDroppedStacks(List.of());

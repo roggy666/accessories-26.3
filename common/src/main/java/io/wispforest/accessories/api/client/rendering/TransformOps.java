@@ -37,8 +37,8 @@ public class TransformOps {
 
                 poseStack.translate(translationVector.x, translationVector.y, translationVector.z);
             }
-            case Transformation.RawRotation rawRotation -> poseStack.mulPose(rawRotation.quarternionf());
-            case Transformation.AxisRotation axisRotation -> poseStack.mulPose(axisRotation.axisAngle4f().get(new Quaternionf()));
+            case Transformation.RawRotation rawRotation -> poseStack.rotate(rawRotation.quarternionf());
+            case Transformation.AxisRotation axisRotation -> poseStack.rotate(axisRotation.axisAngle4f().get(new Quaternionf()));
             case Transformation.Scale scale -> {
                 var scaleVector = scale.scale();
 

@@ -42,7 +42,7 @@ public abstract class AvatarRendererMixin<A extends Avatar & ClientAvatarEntity>
         CosmeticArmorLookupTogglable.runWithLookupToggle(Minecraft.getInstance().player, () -> original.call(poseStack, submitNodeCollector, i, resourceLocation, modelPart, bl));
     }
 
-    @Inject(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModelPart(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/rendertype/RenderType;IILnet/minecraft/client/renderer/texture/TextureAtlasSprite;)V", shift = At.Shift.AFTER))
+    @Inject(method = "renderHand", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModelPart(Lnet/minecraft/client/model/geom/ModelPart;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/rendertype/RenderType;IILnet/minecraft/client/renderer/texture/UvMapping;)V", shift = At.Shift.AFTER))
     private void accessories$firstPersonAccessories(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int combinedLight, Identifier resourceLocation, ModelPart rendererArm, boolean bl, CallbackInfo ci, @Local PlayerModel playerModel) {
         AccessoriesRenderLayer.submitFirstPersonAsClientPlayer((AvatarRenderer<A>) (Object) this, playerModel, poseStack, combinedLight, submitNodeCollector, rendererArm == this.model.leftArm ? HumanoidArm.LEFT : HumanoidArm.RIGHT);
     }

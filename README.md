@@ -1,7 +1,7 @@
 <h1 align="center">
   <img src="https://cdn.modrinth.com/data/jtmvUHXj/14fabf4859e845b0bd6659daf2375be3e88f59ec.png" width=230>
   <br>
-  αccessories
+  αccessories — Fabric 26.3 (Unofficial Port)
   <br>
   <a href="https://modrinth.com/mod/accessories/">
       <img src="https://img.shields.io/badge/-modrinth-gray?style=for-the-badge&labelColor=1bd96a&labelWidth=15&logo=modrinth&logoColor=white">
@@ -21,8 +21,26 @@
   </a>
 </h1>
 
+> [!NOTE]
+> **Official Release & Credits:**
+> This is an unofficial community port. The original mod is created and maintained by **wisp-forest** (chyzman, glisco, and contributors).  
+> Official Release: [Modrinth](https://modrinth.com/mod/accessories) | Source: [GitHub (wisp-forest/accessories)](https://github.com/wisp-forest/accessories)
+
+---
+
 ## Overview
-Accessories is a Data-Driven Accessory mod for NeoForge and Fabric with emphasis on using a Common API for both platforms when possible
+
+This repository is an unofficial port of **Accessories** to **Minecraft 26.3** running natively on the **Fabric Loader** and **Fabric API** (Java 25).
+
+Accessories is a Data-Driven Accessory mod for Fabric with emphasis on using a clean, modern API.
+
+### System & Dependency Requirements
+- **Minecraft:** `26.3`
+- **Java:** `25`
+- **Fabric Loader:** `>= 0.16.9`
+- **Fabric API:** `0.161.0+26.3`
+- **owo-lib:** `>= 0.13.1+26.3`
+
 
 <p/>
   

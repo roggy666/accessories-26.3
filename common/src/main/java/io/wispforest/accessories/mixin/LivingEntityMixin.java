@@ -117,7 +117,7 @@ public abstract class LivingEntityMixin extends Entity implements AccessoriesAPI
     //--
 
     @Inject(method = "onEquippedItemBroken", at = @At("HEAD"), cancellable = true)
-    private void sendAccessoriesBreakInstead(Item item, EquipmentSlot slot, CallbackInfo ci){
+    private void sendAccessoriesBreakInstead(ItemStack stack, EquipmentSlot slot, CallbackInfo ci){
         if(slot.equals(AccessoriesInternals.INSTANCE.getInternalEquipmentSlot())) ci.cancel();
     }
 

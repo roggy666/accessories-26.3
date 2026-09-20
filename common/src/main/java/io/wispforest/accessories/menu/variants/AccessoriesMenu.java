@@ -1,5 +1,6 @@
 package io.wispforest.accessories.menu.variants;
 
+import net.minecraft.util.Prediction;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import io.wispforest.accessories.api.menu.AccessoriesBasedSlot;
@@ -423,7 +424,7 @@ public class AccessoriesMenu extends AccessoriesMenuBase {
 
         slot.onTake(player, itemStack2);
 
-        if (index == 0) player.drop(itemStack2, false);
+        if (index == 0) player.drop(itemStack2, false, Prediction.PREDICTED);
 
         return itemStack;
     }

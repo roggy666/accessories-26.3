@@ -151,7 +151,7 @@ public class ModelTransformOps {
                 zPercent != null ? Mth.lerp((-zPercent.doubleValue() + 1) / 2, aabb.getFirst().z, aabb.getSecond().z) : 0
         );
         poseStack.scale(8, 8, 8);
-        poseStack.mulPose(Axis.XP.rotationDegrees(180));
+        poseStack.rotate(Axis.XP.rotationDegrees(180));
     }
 
     private static Pair<Vec3, Vec3> getAABB(ModelPart part) {

@@ -20,3 +20,12 @@ classes/
 *.launch
 .architectury-transformer/
 .kotlin/
+
+# Notes and temporary markdown files
+*.md
+!README.md
+!info/*.md
+
+# Local scripts
+run_client.bat
+run_*.bat
